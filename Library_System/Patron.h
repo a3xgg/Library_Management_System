@@ -1,29 +1,32 @@
 #ifndef PATRON	//FILE GUARDS REFER: https://www.youtube.com/watch?v=RU5JUHAiR18
 #define PATRON
 
+#pragma warning(disable: 4996) //REFER: https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-3-c4996?f1url=https%3A%2F%2Fmsdn.microsoft.com%2Fquery%2Fdev16.query%3FappId%3DDev16IDEF1%26l%3DEN-US%26k%3Dk(C4996)%26rd%3Dtrue&view=vs-2019
+
 #include <string>
 #include <iostream>
+#include <ctime>
 #include "Book.h"
+#include "CustomDate.h"
 
 using namespace book;
 using namespace std;
+using namespace date;
 
 namespace patron {
-	
-	class DateOfBirth {
-		public:
-			int day, month, year;
-	};
+	Date dob;
 	char ch;
 	string id, firstName, lastName;
-	DateOfBirth dob;
 	char gender;
-	int size;
 	
 	class Patron {
 		public:
+			Patron* linkToNextPatron;
+			char* registeredDate;
+			string patronID;
+			Date dateOfBirth;
 			string getID() {
-				return this->id;
+				return patronID;
 			}
 			char getGender() {
 				return this->gender;
@@ -34,8 +37,8 @@ namespace patron {
 			string getLastName() {
 				return this->lastName;
 			}
-			DateOfBirth getDOB() {
-				return this->dob;
+			Date getDateOfBirth() {
+				return this->dateOfBirth;
 			}
 			void setFirstname(string fn) {
 				this->firstName = fn;
@@ -46,20 +49,88 @@ namespace patron {
 			void setGender(char gender) {
 				this->gender = gender;
 			}
-			void setDOB(DateOfBirth dob) {
-				this->dob = dob;
+			void setDob(Date dob) {
+				this->dateOfBirth = dob;
 			}
-			Patron* linkToNextPatron;
-			book::Book * bookList;
+
 		private:
-			string id, firstName, lastName;
-			DateOfBirth dob;
+			string firstName, lastName;
 			char gender;
 	};
 
+	//FUNCTION PROTOTYPES
 	int getSize(Patron*& head);
 	void promptNewPatron(Patron*&);
-	void insertPatron(Patron*& head, Patron * newPatron);
+	void insertPatron(Patron*& head, Patron* newPatron);
+	void searchPatron(Patron*& head);
+	string generateID(Patron*& patronHead);
+	bool printPatronDetails(Patron* patron);
+	void viewPatron(Patron*& head);
+
+	/*
+		SEARCH PATRON FUNCTION
+		- Function that search for a specified patron by name or id
+	*/
+	void searchPatron(Patron*& head) {
+		if (head == NULL) {
+			system("CLS");
+			cout << "Patron list is empty" << endl;
+			system("PAUSE");
+		}
+		else {
+			system("CLS");
+			Patron* current = head;
+			string patronInfo;
+			bool flag = false;
+			int ch;
+			cout << "Search Patron\n1. ID\n2. Full Name\n" << endl;
+			cout << "Menu: ";
+			cin >> ch;
+			switch (ch) {
+			case 1:
+				system("CLS");
+				cout << "Enter ID to search" << endl;
+				cout << "ID: ";
+				cin >> patronInfo;
+				while (current != NULL) {
+					bool res = patronInfo == current->getID() ? printPatronDetails(current) : false;
+					if (res) { flag = true; break; }
+					else current = current->linkToNextPatron;
+				}
+				break;
+			case 2:
+				system("CLS");
+				cout << "Enter Name to search" << endl;
+				cout << "Full Name: ";
+				cin.ignore();
+				getline(cin, patronInfo);
+				while (current != NULL) {
+					string concatenate = current->getFirstName() + " " + current->getLastName();
+					bool res = patronInfo == concatenate ? printPatronDetails(current) : false;
+					if (res) { flag = true; break; }
+					else current = current->linkToNextPatron;
+				}
+				break;
+			}
+			if (!flag) {
+				cout << "Patron Not found" << endl;
+				system("PAUSE");
+			}
+		}
+	}
+
+	/*
+		PRINT PATRON DETAILS - SINGLE
+		- A function that prints a single patron information, implemented during searching
+	*/
+	bool printPatronDetails(Patron * patron) {
+		system("CLS");
+		cout << "Patron Details" << endl;
+		cout << "Patron ID\tName\t\tGender\tDate of Birth\tRegistered Date" << endl;
+		cout << patron->getID() << "\t\t" << patron->getFirstName() << " " << patron->getLastName() << "\t" << patron->getGender() << "\t" << patron->getDateOfBirth().day << "/" << patron->getDateOfBirth().month << "/" << patron->getDateOfBirth().year << "\t" << patron->registeredDate << endl;
+		system("PAUSE");
+		return true;
+	}
 
 	/*
 		PROMPT NEW PATRON
@@ -68,6 +139,8 @@ namespace patron {
 		- refer: https://stackoverflow.com/questions/22000190/when-passing-head-of-linked-list-to-function-why-do-we-need-to-pass-it-by-refere%5C%5C
 	*/
 	void promptNewPatron(Patron *& head) {
+		system("CLS");
+		time_t currentDateTime = time(0);
 		Patron* p = new Patron;
 		cout << "Enter Patron details" << endl;
 		cout << "First name: ";
@@ -76,54 +149,66 @@ namespace patron {
 		cin >> lastName;
 		cout << "Gender (M/F): ";
 		cin >> gender;
-		cout << "Date of Birth (dd/mm/yyyy): ";
-		cin >> dob.day >> dob.month >> dob.year;
+		do {
+			cout << "Date of Birth (dd/mm/yyyy): ";
+			cin >> dob.day >> dob.month >> dob.year;
+		} while (!checkDate(dob.day, dob.month, dob.year));
 
 		system("CLS");
 
 		cout << "Confirm Patron Details" << endl << endl;
 		cout << "Name: " << firstName << " " << lastName << endl;
 		cout << "Gender: " << gender << endl;
-		cout << "Date of Birth: " << endl;
+		cout << "Date of Birth: " << dob.day << "/" << dob.month << "/" << dob.year << endl;
 		cout << endl;
 		cout << "Confirm? (Y/N): ";
 		cin >> ch;
 		switch (ch) {
 		case 'Y':
 		case 'y':
+			p->patronID = generateID(head);
 			p->setFirstname(firstName);
 			p->setLastName(lastName);
-			p->setGender(gender);
-			p->setDOB(dob);
-			//p->bookList = NULL;
+			p->setGender(toupper(gender));
+			p->setDob(dob);
+			p->registeredDate = ctime(&currentDateTime);
 			p->linkToNextPatron = NULL;
 			insertPatron(head, p);
 			break;
 		case 'N':
 		case'n':
 			system("CLS");
-			promptNewPatron(head);
+			//promptNewPatron(head);
 			break;
 		}
 	}
 
 	/*
 		INSERT PATRON
-		- A function that inserts a new patron object to the first node of the linked list.
+		- A function that inserts a new patron object to the FIRST NODE of the linked list.
 		- Takes 2 parameters, reference to pointer and pointer to patron object.
 		- refer: https://stackoverflow.com/questions/22000190/when-passing-head-of-linked-list-to-function-why-do-we-need-to-pass-it-by-refere%5C%5C
 	*/
 	void insertPatron(Patron*& head, Patron * newPatron) {
 		if (head == NULL) {
 			head = newPatron;
+			cout << "Added Patron successfully!" << endl;
+			system("PAUSE");
 		}
 		else {
 			Patron* current = head;
 			newPatron->linkToNextPatron = current;
 			head = newPatron;
+			cout << "Added Patron successfully!" << endl;
+			system("PAUSE");
 		}
 	}
 
+	/*
+		VIEW PATRON - ALL
+		- A function that prints all patron
+		- Takes a reference to pointer parameter
+	*/
 	void viewPatron(Patron * &head) {
 		if (head == NULL) {
 			system("CLS");
@@ -133,9 +218,9 @@ namespace patron {
 		else {
 			system("CLS");
 			Patron * current = head;
-			cout << "Name\t\tGender\tDate of Birth" << endl;
+			cout << "Patron ID\tName\t\tGender\tDate of Birth\tRegistered Date" << endl;
 			while (current != NULL) {
-				cout << current->getFirstName() << " " << current->getLastName() << "\t" << current->getGender() << "\t" << current->getDOB().day << "/" << current->getDOB().month << "/" << current->getDOB().year<< endl;
+				cout << current->getID() << "\t\t" << current->getFirstName() << " " << current->getLastName() << "\t" << current->getGender() << "\t" << current->getDateOfBirth().day << "/" << current->getDateOfBirth().month << "/" << current->getDateOfBirth().year << "\t" << current->registeredDate << endl;
 				current = current->linkToNextPatron;
 			}
 			cout << "\nTotal Patron(s): " << getSize(head) << " Patron(s)." << endl;
@@ -144,8 +229,12 @@ namespace patron {
 		}
 	}
 
+	/*
+		GET SIZE FUNCTION
+		- A function to get the size of Patron Linked List
+	*/
 	int getSize(Patron * &head) {
-		size = 0;
+		int size = 0;
 		if (head == NULL) {
 			return 0;
 		}
@@ -159,10 +248,23 @@ namespace patron {
 		return size;
 	}
 
-	void validateDOB() {
-		do {
-
-		} while (dob.day < 0);
+	/*
+		GENERATE PATRON ID
+		- A function to generate ID for a patron
+		- Take reference to pointer as param
+		- Note: As new patron is inserted to the first Node, traversing is not needed
+	*/
+	string generateID(Patron * & patronHead) {
+		if (patronHead == NULL) {
+			return "PT1";
+		}
+		else {
+			Patron* current = patronHead;
+			string tempID = current->getID();
+			tempID = tempID.substr(2, 5);
+			string id = to_string(stoi(tempID) + 1);
+			return "PT" + id;
+		}
 	}
 }
 
