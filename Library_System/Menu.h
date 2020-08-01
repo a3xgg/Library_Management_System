@@ -1,3 +1,6 @@
+#ifndef MENU
+#define MENU
+
 #include <iostream>
 #include "Patron.h"
 #include "Book.h"
@@ -5,10 +8,11 @@
 using namespace std;
 using namespace patron;
 using namespace book;
+using namespace date;
 
 namespace menu {
-	Patron * patronHead = NULL;
-	Book* bookHead = NULL;
+	BookTitle* bookTitleHead = NULL;
+	Patron* patronHead = NULL;
 	const string username = "lmsadmin", password = "12345";
 	string* uname, * pass;
 	class Menu {
@@ -63,9 +67,12 @@ namespace menu {
 										cin >> choice;
 										switch (choice) {
 										case 1:
+											promptNewBook(bookTitleHead);
+											system("CLS");
 											break;
 										case 2:
-											displayAllBooks(bookHead);
+											displayAllBooks(bookTitleHead);
+											system("PAUSE");
 											system("CLS");
 											break;
 										case 3:
@@ -80,23 +87,32 @@ namespace menu {
 									} while (choice != 0);
 									break;
 								case 2:
-									system("CLS");
-									cout << "Patron Functionalities" << endl;
-									cout << "\n1. View Patron\n2. Search Patron\n3. Insert Patron\n4. Update Patron\n5. Delete Patron\n\n6. Borrow Book\n7. Return Book\n8. Patron Book History\n9. View All Patron with Active Books\n\n0. Back" << endl;
-									cout << "Menu: ";
-									cin >> choice;
-									switch (choice) {
+									/*PATRON FUNCTIONALITY HERE*/
+									do {
+										system("CLS");
+										cout << "Patron Functionalities" << endl;
+										cout << "\n1. View Patron\n2. Search Patron\n3. Insert Patron\n4. Update Patron\n5. Delete Patron\n\n6. Borrow Book\n7. Return Book\n8. Patron Book History\n9. View All Patron with Active Books\n\n0. Back" << endl;
+										cout << "Menu: ";
+										cin >> choice;
+										switch (choice) {
 										case 1:
 											viewPatron(patronHead);
+											system("CLS");
+											break;
+										case 2:
+											searchPatron(patronHead);
 											system("CLS");
 											break;
 										case 3:
 											promptNewPatron(patronHead);
 											system("CLS");
 											break;
-									}
-									/*PATRON FUNCTIONALITY HERE*/
-									break;
+										case 0:
+											system("CLS");
+											Menu(2);
+											break;
+										}
+									} while (choice != 0);
 							}
 						} while (choice != 0);
 						break;
@@ -104,3 +120,5 @@ namespace menu {
 			}
 	};
 }
+
+#endif
