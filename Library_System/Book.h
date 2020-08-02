@@ -194,10 +194,11 @@ namespace book
 		string bookInfo;
 		int ch, subOptions;
 		system("CLS");
-		cout << "Which Field do you want to search the book on\n1. Genre\n2. Category\n3. Book Title\n4. Availability\n5. Book ID\nMenu: ";
+		cout << "Which Field do you want to search the book on\n1. Genre\n2. Category\n3. Book Title\n4. Availability\n5. Book ID\n\n0. Back\nMenu: ";
 		cin >> ch;
 		switch (ch)
 		{
+		case 0: break;
 		case 1:
 			cout << "\nChoose a Genre: \nFiction\n1. Fantasy\n2. Science\n3. Historical\n4. Realistic\n5. Fan\n\nNon-Fiction\n6. Narrative\n7. Biography\n8. Periodicals\n9. Self-help\n10. Reference\nGenre: ";
 			cin >> subOptions;
@@ -284,6 +285,7 @@ namespace book
 		if (bookTitleHead == NULL)
 		{
 			cout << "Book List is empty" << endl;
+			system("PAUSE");
 		}
 		else
 		{
@@ -317,6 +319,7 @@ namespace book
 					}
 					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
+				system("PAUSE");
 				break;
 			case 2: /*SEARCH ON CATEGORY*/
 				cout << "SEARCH RESULT(S) BASED ON CATEGORY: " << bookField << endl
@@ -336,6 +339,7 @@ namespace book
 					}
 					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
+				system("PAUSE");
 				break;
 			case 3: /*SEARCH ON BOOK TITLE*/
 				cout << "SEARCH RESULT(S) FOR " << bookField << endl
@@ -364,6 +368,7 @@ namespace book
 					}
 					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
+				system("PAUSE");
 				break;
 			case 4:
 			{ /*SEARCH ON AVAILABILITY*/
@@ -394,6 +399,7 @@ namespace book
 					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
 			}
+			system("PAUSE");
 			break;
 			case 5:
 			{
@@ -421,6 +427,7 @@ namespace book
 					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
 			}
+			system("PAUSE");
 			break;
 			}
 		}
@@ -440,11 +447,12 @@ namespace book
 
 		system("CLS");
 		cout << "INSERTING BOOK" << endl;
-		cout << "1. Insert New Title\n2. Add Existing Title" << endl;
+		cout << "1. Insert New Title\n2. Add Existing Title\n\n0. Back" << endl;
 		cout << "Menu: ";
 		cin >> ch;
 		switch (ch)
 		{
+		case 0: break;
 		case 1:
 			system("CLS");
 			cout << "Enter Book Details" << endl;
@@ -675,13 +683,14 @@ namespace book
 		else
 		{
 			BookTitle *currentBookTitlePointer = bookTitleHead;
-			cout << "How would you like to view the Book List\n1. Expanded\n2. Simplified" << endl;
+			cout << "How would you like to view the Book List\n\n1. Expanded\n2. Simplified\n\n0. Back" << endl;
 			cout << "Menu: ";
 			cin >> ch;
 			system("CLS");
 
 			switch (ch)
 			{
+			case 0: break;
 			case 1:
 				cout << expandedBookView << endl;
 				while (currentBookTitlePointer != NULL)
