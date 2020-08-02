@@ -58,11 +58,10 @@ namespace menu {
 							switch (choice) {
 								case 0: break;
 								case 1:
-									
 									do {
 										system("CLS");
 										cout << "Book Functionalities" << endl;
-										cout << "\n1. Insert Book Information\n2. Display Books\n3. Search Books\n4. Delete Books\n\n0. Back" << endl;
+										cout << "\n1. Insert Book Information\n2. Display Books\n3. Search Books\n4. Update Book Information\n\n0. Back" << endl;
 										cout << "Menu: ";
 										cin >> choice;
 										switch (choice) {
@@ -76,6 +75,9 @@ namespace menu {
 											system("CLS");
 											break;
 										case 3:
+											promptSearch(bookTitleHead);
+											system("PAUSE");
+											system("CLS");
 											break;
 										case 4:
 											break;
