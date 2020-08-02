@@ -59,15 +59,121 @@ namespace book
 	void promptNewBook(BookTitle *&);
 	void displayAllBooks(BookTitle *&);
 	bool checkDuplicateUniqueTitle(BookTitle*&, string, string);
-	void addExistingBookTitle(BookTitle*& bookTitleHead, string bookID);
-	void addExistingBookTitle(BookTitle*& bookTitleHead, string,string);
+	void addExistingBookTitle(BookTitle*&, string);
+	void addExistingBookTitle(BookTitle*&, string, string);
 	string generateInventoryID(BookTitle*&, string);
 	void searchBook(BookTitle*&, int, string);
 	void promptSearch(BookTitle*&);
+	void promptUpdate(BookTitle*&);
+	void updateBookInformation(BookTitle*&, string);
+
+	/*
+		PROMPT UPDATE
+		- A function that prompts the user on the BOOK ID that the user wants to update
+	*/
+	void promptUpdate(BookTitle*& bookTitleHead) {
+		if (bookTitleHead == NULL) {
+			cout << "Book List is empty!" << endl;
+		}
+		else {
+			string bookInfo;
+			system("CLS");
+			displayAllBooks(bookTitleHead);
+			cout << "\nEnter the Book ID to edit: ";
+			cin >> bookInfo;
+			updateBookInformation(bookTitleHead, bookInfo);
+		}
+	}
+
+	void updateBookInformation(BookTitle*& bookTitleHead, string bookID) {
+		if (bookTitleHead == NULL) {
+			cout << "Book List is empty!" << endl;
+		}
+		else {
+			BookTitle* currentBookTitle = bookTitleHead;
+			string mainID = bookID.substr(0, 7); // GETS THE MAIN ID ex. BK10001 without -X where X is inventory number
+			while (currentBookTitle != NULL) {	/*FIRST WHILE LOOP - LOOPS THROUGH VERTICALLY TO FIND OUT THE MAIN ID EX. BK10001*/
+				if (mainID == currentBookTitle->bookInfo->bookID) {
+					BookInformation* currentBookColumn = currentBookTitle->bookInfo;
+					while (currentBookColumn != NULL) {
+						if (bookID == currentBookColumn->bookID) {
+							BookInformation* toUpdate = currentBookColumn;
+							int ch;
+							system("CLS");
+							cout << "EDITING BOOK ID: " << toUpdate->bookID << endl << endl;
+							cout << "New Title: ";
+							cin.ignore();
+							getline(cin, toUpdate->bookTitle);
+							cout << "New Author: ";
+							getline(cin, toUpdate->bookAuthor);
+							cout << "New Category: \n1. Fiction\n2. Non-Fiction" << endl;
+							cin >> ch;
+							switch (ch) {
+							case 1:
+								toUpdate->category = "Fiction";
+								cout << "New Genre: \n1. Fantasy\n2. Science\n3. Historical\n4. Realistic\n5. Fan\n\nMenu: ";
+								cin >> ch;
+								switch (ch) {
+								case 1:
+									toUpdate->genre = "Fantasy";
+									break;
+								case 2:
+									toUpdate->genre = "Science";
+									break;
+								case 3:
+									toUpdate->genre = "Historical";
+									break;
+								case 4:
+									toUpdate->genre = "Realistic";
+									break;
+								case 5:
+									toUpdate->genre = "Fan";
+									break;
+								}
+								break;
+							case 2:
+								toUpdate->category = "Non-Fiction";
+								cout << "New Genre: \n1. Narrative\n2. Biography\n3. Periodicals\n4. Self-help\n5. Reference\nMenu: ";
+								cin >> ch;
+								switch (ch) {
+								case 1:
+									toUpdate->genre = "Narrative";
+									break;
+								case 2:
+									toUpdate->genre = "Biography";
+									break;
+								case 3:
+									toUpdate->genre = "Periodical";
+									break;
+								case 4:
+									toUpdate->genre = "Self-help";
+									break;
+								case 5:
+									toUpdate->genre = "Reference";
+									break;
+								}
+								break;
+							}
+							cout << "\nBOOK ID: " << toUpdate->bookID << " has been updated with following details: " << endl;
+							cout << "Book Title: " << toUpdate->bookTitle << endl;
+							cout << "Book Author: " << toUpdate->bookAuthor << endl;
+							cout << "Category: " << toUpdate->category << endl;
+							cout << "Genre: " << toUpdate->genre << endl;
+							system("PAUSE");
+							break;
+						}
+						currentBookColumn = currentBookColumn->nextBookInventory;
+					}
+					break;
+				}
+				currentBookTitle = currentBookTitle->nextBookTitle;
+			}
+		}
+	}
 
 	/*
 		PROMPT SEARCH FUNCTION
-		- A simple function so prompt user on what to search;
+		- A function that prompts the admin on what field to search the book on
 	*/
 	void promptSearch(BookTitle*&bookTitleHead) {
 		string bookInfo;
@@ -131,7 +237,7 @@ namespace book
 
 	/*
 		SEARCH BOOK FUNCTION
-		- A function that search for and print the book details to the admin
+		- A function that search for the specified field the admin entered and prints the book information
 		- Takes 3 param, BookTitle reference pointer, Int for the chosen search option and String for the data to search for
 	*/
 	void searchBook(BookTitle *& bookTitleHead, int fieldOption, string bookField) {
