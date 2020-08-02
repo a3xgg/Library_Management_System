@@ -22,35 +22,35 @@ namespace book
 	/*CLASS*/
 	class BookTitle
 	{
-		public:
-			BookTitle() {}
-			BookTitle(BookInformation * bookInformation, BookTitle * uniqueTitle) {
-				this->bookInfo = bookInformation;
-				this->nextBookTitle = uniqueTitle;
-			}
-			BookTitle *nextBookTitle;
-			BookInformation *bookInfo;
+	public:
+		BookTitle() {}
+		BookTitle(BookInformation *bookInformation, BookTitle *uniqueTitle)
+		{
+			this->bookInfo = bookInformation;
+			this->nextBookTitle = uniqueTitle;
+		}
+		BookTitle *nextBookTitle;
+		BookInformation *bookInfo;
 	};
 
 	class BookInformation
 	{
-		public:
-			BookInformation() {}
-			BookInformation(string bookTitle, string bookAuthor, string genre, string category, bool availability, string bookID, BookInformation * nextBookInvent) {
-				this->bookTitle = bookTitle;
-				this->bookAuthor = bookAuthor;
-				this->genre = genre;
-				this->category = category;
-				this->bookAvailability = availability;
-				this->bookID = bookID;
-				this->nextBookInventory = nextBookInvent;
-				this->returnDate = NULL;
-				this->borrowedDate = NULL;
-			}
-			string category, genre, bookAuthor, bookTitle, bookID;
-			bool bookAvailability;
-			BookInformation *nextBookInventory;
-			Date* returnDate, * borrowedDate;
+	public:
+		BookInformation() {}
+		BookInformation(string bookTitle, string bookAuthor, string genre, string category, bool availability, string bookID, BookInformation *nextBookInvent)
+		{
+			this->bookTitle = bookTitle;
+			this->bookAuthor = bookAuthor;
+			this->genre = genre;
+			this->category = category;
+			this->bookAvailability = availability;
+			this->bookID = bookID;
+			this->nextBookInventory = nextBookInvent;
+		}
+		string category, genre, bookAuthor, bookTitle, bookID;
+		bool bookAvailability;
+		BookInformation *nextBookInventory;
+		Date returnDate, borrowedDate;
 	};
 
 	/*FUNCTION PROTOTYPE*/
@@ -58,24 +58,27 @@ namespace book
 	void insertBookDetail(BookTitle *&, BookTitle *);
 	void promptNewBook(BookTitle *&);
 	void displayAllBooks(BookTitle *&);
-	bool checkDuplicateUniqueTitle(BookTitle*&, string, string);
-	void addExistingBookTitle(BookTitle*&, string);
-	void addExistingBookTitle(BookTitle*&, string, string);
-	string generateInventoryID(BookTitle*&, string);
-	void searchBook(BookTitle*&, int, string);
-	void promptSearch(BookTitle*&);
-	void promptUpdate(BookTitle*&);
-	void updateBookInformation(BookTitle*&, string);
+	bool checkDuplicateUniqueTitle(BookTitle *&, string, string);
+	void addExistingBookTitle(BookTitle *&, string);
+	void addExistingBookTitle(BookTitle *&, string, string);
+	string generateInventoryID(BookTitle *&, string);
+	void searchBook(BookTitle *&, int, string);
+	void promptSearch(BookTitle *&);
+	void promptUpdate(BookTitle *&);
+	void updateBookInformation(BookTitle *&, string);
 
 	/*
 		PROMPT UPDATE
 		- A function that prompts the user on the BOOK ID that the user wants to update
 	*/
-	void promptUpdate(BookTitle*& bookTitleHead) {
-		if (bookTitleHead == NULL) {
+	void promptUpdate(BookTitle *&bookTitleHead)
+	{
+		if (bookTitleHead == NULL)
+		{
 			cout << "Book List is empty!" << endl;
 		}
-		else {
+		else
+		{
 			string bookInfo;
 			system("CLS");
 			displayAllBooks(bookTitleHead);
@@ -85,22 +88,30 @@ namespace book
 		}
 	}
 
-	void updateBookInformation(BookTitle*& bookTitleHead, string bookID) {
-		if (bookTitleHead == NULL) {
+	void updateBookInformation(BookTitle *&bookTitleHead, string bookID)
+	{
+		if (bookTitleHead == NULL)
+		{
 			cout << "Book List is empty!" << endl;
 		}
-		else {
-			BookTitle* currentBookTitle = bookTitleHead;
+		else
+		{
+			BookTitle *currentBookTitle = bookTitleHead;
 			string mainID = bookID.substr(0, 7); // GETS THE MAIN ID ex. BK10001 without -X where X is inventory number
-			while (currentBookTitle != NULL) {	/*FIRST WHILE LOOP - LOOPS THROUGH VERTICALLY TO FIND OUT THE MAIN ID EX. BK10001*/
-				if (mainID == currentBookTitle->bookInfo->bookID) {
-					BookInformation* currentBookColumn = currentBookTitle->bookInfo;
-					while (currentBookColumn != NULL) {
-						if (bookID == currentBookColumn->bookID) {
-							BookInformation* toUpdate = currentBookColumn;
+			while (currentBookTitle != NULL)
+			{ /*FIRST WHILE LOOP - LOOPS THROUGH VERTICALLY TO FIND OUT THE MAIN ID EX. BK10001*/
+				if (mainID == currentBookTitle->bookInfo->bookID)
+				{
+					BookInformation *currentBookColumn = currentBookTitle->bookInfo;
+					while (currentBookColumn != NULL)
+					{
+						if (bookID == currentBookColumn->bookID)
+						{
+							BookInformation *toUpdate = currentBookColumn;
 							int ch;
 							system("CLS");
-							cout << "EDITING BOOK ID: " << toUpdate->bookID << endl << endl;
+							cout << "EDITING BOOK ID: " << toUpdate->bookID << endl
+								 << endl;
 							cout << "New Title: ";
 							cin.ignore();
 							getline(cin, toUpdate->bookTitle);
@@ -108,12 +119,14 @@ namespace book
 							getline(cin, toUpdate->bookAuthor);
 							cout << "New Category: \n1. Fiction\n2. Non-Fiction" << endl;
 							cin >> ch;
-							switch (ch) {
+							switch (ch)
+							{
 							case 1:
 								toUpdate->category = "Fiction";
 								cout << "New Genre: \n1. Fantasy\n2. Science\n3. Historical\n4. Realistic\n5. Fan\n\nMenu: ";
 								cin >> ch;
-								switch (ch) {
+								switch (ch)
+								{
 								case 1:
 									toUpdate->genre = "Fantasy";
 									break;
@@ -135,7 +148,8 @@ namespace book
 								toUpdate->category = "Non-Fiction";
 								cout << "New Genre: \n1. Narrative\n2. Biography\n3. Periodicals\n4. Self-help\n5. Reference\nMenu: ";
 								cin >> ch;
-								switch (ch) {
+								switch (ch)
+								{
 								case 1:
 									toUpdate->genre = "Narrative";
 									break;
@@ -175,33 +189,57 @@ namespace book
 		PROMPT SEARCH FUNCTION
 		- A function that prompts the admin on what field to search the book on
 	*/
-	void promptSearch(BookTitle*&bookTitleHead) {
+	void promptSearch(BookTitle *&bookTitleHead)
+	{
 		string bookInfo;
 		int ch, subOptions;
 		system("CLS");
 		cout << "Which Field do you want to search the book on\n1. Genre\n2. Category\n3. Book Title\n4. Availability\n5. Book ID\nMenu: ";
 		cin >> ch;
-		switch (ch) {
+		switch (ch)
+		{
 		case 1:
 			cout << "\nChoose a Genre: \nFiction\n1. Fantasy\n2. Science\n3. Historical\n4. Realistic\n5. Fan\n\nNon-Fiction\n6. Narrative\n7. Biography\n8. Periodicals\n9. Self-help\n10. Reference\nGenre: ";
 			cin >> subOptions;
-			switch (subOptions) {
-				case 1: bookInfo = "Fantasy"; break;
-				case 2: bookInfo = "Science"; break;
-				case 3: bookInfo = "Historical"; break;
-				case 4: bookInfo = "Realistic"; break;
-				case 5: bookInfo = "Fan"; break;
-				case 6: bookInfo = "Narrative"; break;
-				case 7: bookInfo = "Biography"; break;
-				case 8: bookInfo = "Periodicals"; break;
-				case 9: bookInfo = "Self-help"; break;
-				case 10: bookInfo = "Reference"; break;
+			switch (subOptions)
+			{
+			case 1:
+				bookInfo = "Fantasy";
+				break;
+			case 2:
+				bookInfo = "Science";
+				break;
+			case 3:
+				bookInfo = "Historical";
+				break;
+			case 4:
+				bookInfo = "Realistic";
+				break;
+			case 5:
+				bookInfo = "Fan";
+				break;
+			case 6:
+				bookInfo = "Narrative";
+				break;
+			case 7:
+				bookInfo = "Biography";
+				break;
+			case 8:
+				bookInfo = "Periodicals";
+				break;
+			case 9:
+				bookInfo = "Self-help";
+				break;
+			case 10:
+				bookInfo = "Reference";
+				break;
 			}
 			break;
 		case 2:
 			cout << "\nChoose a Category:\n1. Fiction\n2. Non-Fiction\nCategory: ";
 			cin >> subOptions;
-			switch (subOptions) {
+			switch (subOptions)
+			{
 			case 1:
 				bookInfo = "Fiction";
 				break;
@@ -218,7 +256,8 @@ namespace book
 		case 4:
 			cout << "\nChoose Availability:\n1. Available\n2. Unavailable\nAvailability: ";
 			cin >> subOptions;
-			switch (subOptions) {
+			switch (subOptions)
+			{
 			case 1:
 				bookInfo = "Available";
 				break;
@@ -240,115 +279,149 @@ namespace book
 		- A function that search for the specified field the admin entered and prints the book information
 		- Takes 3 param, BookTitle reference pointer, Int for the chosen search option and String for the data to search for
 	*/
-	void searchBook(BookTitle *& bookTitleHead, int fieldOption, string bookField) {
-		if (bookTitleHead == NULL) {
+	void searchBook(BookTitle *&bookTitleHead, int fieldOption, string bookField)
+	{
+		if (bookTitleHead == NULL)
+		{
 			cout << "Book List is empty" << endl;
 		}
-		else {
-			BookTitle* currentBookTitlePointer = bookTitleHead;
+		else
+		{
+			BookTitle *currentBookTitlePointer = bookTitleHead;
 			system("CLS");
-			switch (fieldOption) {
-				case 1:	/*SEARCH ON GENRE*/
-					cout << "SEARCH RESULT(S) BASED ON GENRE: " << bookField << endl << endl;
-					cout << "BOOKID\tBOOKTITLE\tBOOKAUTHOR\tGENRE\tAVAILABILITY" << endl;
-					while (currentBookTitlePointer != NULL) {	/*FIRST WHILE LOOP - TRAVERSE VERTICALLY*/
-						if (bookField == currentBookTitlePointer->bookInfo->genre) {
-							BookInformation* traverseColumn = currentBookTitlePointer->bookInfo;
-							if (traverseColumn->nextBookInventory == NULL) {
+			switch (fieldOption)
+			{
+			case 1: /*SEARCH ON GENRE*/
+				cout << "SEARCH RESULT(S) BASED ON GENRE: " << bookField << endl
+					 << endl;
+				cout << "BOOKID\tBOOKTITLE\tBOOKAUTHOR\tGENRE\tAVAILABILITY" << endl;
+				while (currentBookTitlePointer != NULL)
+				{ /*FIRST WHILE LOOP - TRAVERSE VERTICALLY*/
+					if (bookField == currentBookTitlePointer->bookInfo->genre)
+					{
+						BookInformation *traverseColumn = currentBookTitlePointer->bookInfo;
+						if (traverseColumn->nextBookInventory == NULL)
+						{
+							string res = traverseColumn->bookAvailability == true ? "Available" : "Unavailable";
+							cout << traverseColumn->bookID << "\t" << traverseColumn->bookTitle << "\t" << traverseColumn->bookAuthor << "\t" << traverseColumn->genre << "\t\t" << res << endl;
+						}
+						else
+						{
+							while (traverseColumn != NULL)
+							{ /*SECOND WHILE LOOP - TRAVERSE HORIZONTALLY*/
 								string res = traverseColumn->bookAvailability == true ? "Available" : "Unavailable";
 								cout << traverseColumn->bookID << "\t" << traverseColumn->bookTitle << "\t" << traverseColumn->bookAuthor << "\t" << traverseColumn->genre << "\t\t" << res << endl;
-							}
-							else {
-								while (traverseColumn != NULL) {	/*SECOND WHILE LOOP - TRAVERSE HORIZONTALLY*/
-									string res = traverseColumn->bookAvailability == true ? "Available" : "Unavailable";
-									cout << traverseColumn->bookID << "\t" << traverseColumn->bookTitle << "\t" << traverseColumn->bookAuthor << "\t" << traverseColumn->genre << "\t\t" << res << endl;
-									traverseColumn = traverseColumn->nextBookInventory;
-								}
+								traverseColumn = traverseColumn->nextBookInventory;
 							}
 						}
-						currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 					}
-					break;
-				case 2:	/*SEARCH ON CATEGORY*/
-					cout << "SEARCH RESULT(S) BASED ON CATEGORY: " << bookField << endl << endl;
-					cout << "BOOKID\tBOOKTITLE\tBOOKAUTHOR\tCATEGORY\tAVAILABILITY" << endl;
-					while (currentBookTitlePointer != NULL) {
-						if (bookField == currentBookTitlePointer->bookInfo->category) {
-							BookInformation* currentBookColumn = currentBookTitlePointer->bookInfo;
-							while (currentBookColumn != NULL) {
-								string res = currentBookColumn->bookAvailability == true ? "Available" : "Unavailable";
-								cout << currentBookColumn->bookID << "\t" << currentBookColumn->bookTitle << "\t" << currentBookColumn->bookAuthor << "\t" << currentBookColumn->genre << "\t\t" << res << endl;
-								currentBookColumn = currentBookColumn->nextBookInventory;
-							}
+					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+				}
+				break;
+			case 2: /*SEARCH ON CATEGORY*/
+				cout << "SEARCH RESULT(S) BASED ON CATEGORY: " << bookField << endl
+					 << endl;
+				cout << "BOOKID\tBOOKTITLE\tBOOKAUTHOR\tCATEGORY\tAVAILABILITY" << endl;
+				while (currentBookTitlePointer != NULL)
+				{
+					if (bookField == currentBookTitlePointer->bookInfo->category)
+					{
+						BookInformation *currentBookColumn = currentBookTitlePointer->bookInfo;
+						while (currentBookColumn != NULL)
+						{
+							string res = currentBookColumn->bookAvailability == true ? "Available" : "Unavailable";
+							cout << currentBookColumn->bookID << "\t" << currentBookColumn->bookTitle << "\t" << currentBookColumn->bookAuthor << "\t" << currentBookColumn->genre << "\t\t" << res << endl;
+							currentBookColumn = currentBookColumn->nextBookInventory;
 						}
-						currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 					}
-					break;
-				case 3:	/*SEARCH ON BOOK TITLE*/
-					cout << "SEARCH RESULT(S) FOR " << bookField << endl << endl;
-					while (currentBookTitlePointer != NULL) {	/*FIRST WHILE LOOP - LOOPS THROUGH THE VERTICAL LIST*/
-						if (bookField == currentBookTitlePointer->bookInfo->bookTitle) {
-							BookInformation* currentColumnBook = currentBookTitlePointer->bookInfo;
-							cout << expandedBookView << endl;
-							if (currentColumnBook->nextBookInventory != NULL) {
-								while (currentColumnBook != NULL) {	/*SECOND WHILE LOOP - LOOPS THROUGHT THE BOOK INVENTORY (HORIZONTALLY)*/
-									string res = currentColumnBook->bookAvailability == true ? "Available" : "Unavailable";
-									cout << currentColumnBook->bookID << "\t" << currentColumnBook->bookTitle << "\t" << currentColumnBook->bookAuthor << "\t" << currentColumnBook->genre << "\t\t" << currentColumnBook->category << "\t" << res << endl;
-									currentColumnBook = currentColumnBook->nextBookInventory;
-								}
-							}
-							else {
+					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+				}
+				break;
+			case 3: /*SEARCH ON BOOK TITLE*/
+				cout << "SEARCH RESULT(S) FOR " << bookField << endl
+					 << endl;
+				while (currentBookTitlePointer != NULL)
+				{ /*FIRST WHILE LOOP - LOOPS THROUGH THE VERTICAL LIST*/
+					if (bookField == currentBookTitlePointer->bookInfo->bookTitle)
+					{
+						BookInformation *currentColumnBook = currentBookTitlePointer->bookInfo;
+						cout << expandedBookView << endl;
+						if (currentColumnBook->nextBookInventory != NULL)
+						{
+							while (currentColumnBook != NULL)
+							{ /*SECOND WHILE LOOP - LOOPS THROUGHT THE BOOK INVENTORY (HORIZONTALLY)*/
 								string res = currentColumnBook->bookAvailability == true ? "Available" : "Unavailable";
 								cout << currentColumnBook->bookID << "\t" << currentColumnBook->bookTitle << "\t" << currentColumnBook->bookAuthor << "\t" << currentColumnBook->genre << "\t\t" << currentColumnBook->category << "\t" << res << endl;
+								currentColumnBook = currentColumnBook->nextBookInventory;
 							}
-							break;
 						}
-						currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+						else
+						{
+							string res = currentColumnBook->bookAvailability == true ? "Available" : "Unavailable";
+							cout << currentColumnBook->bookID << "\t" << currentColumnBook->bookTitle << "\t" << currentColumnBook->bookAuthor << "\t" << currentColumnBook->genre << "\t\t" << currentColumnBook->category << "\t" << res << endl;
+						}
+						break;
 					}
-					break;
-				case 4: {	/*SEARCH ON AVAILABILITY*/
-					bool res = bookField == "Available" ? true : false;
-					if (res) {
-						cout << "CURRENTLY AVAILABLE BOOK(S)\n" << endl;
-						cout << availabilityView << endl;
+					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+				}
+				break;
+			case 4:
+			{ /*SEARCH ON AVAILABILITY*/
+				bool res = bookField == "Available" ? true : false;
+				if (res)
+				{
+					cout << "CURRENTLY AVAILABLE BOOK(S)\n"
+						 << endl;
+					cout << availabilityView << endl;
+				}
+				else
+				{
+					cout << "CURRENTLY UNAVAILABLE BOOK(S)\n"
+						 << endl;
+					cout << availabilityView << endl;
+				}
+				while (currentBookTitlePointer != NULL)
+				{ /*FIRST WHILE LOOP - LOOPS THROUGH THE LIST VERTICALLY*/
+					BookInformation *currentBookColumn = currentBookTitlePointer->bookInfo;
+					while (currentBookColumn != NULL)
+					{ /*SECOND WHILE LOOP - LOOPS THROUGH THE LIST HORIZONTALLY*/
+						if (res == currentBookColumn->bookAvailability)
+						{
+							cout << currentBookColumn->bookID << "\t" << currentBookColumn->bookTitle << "\t" << currentBookColumn->bookAuthor << "\t" << currentBookColumn->genre << "\t\t" << currentBookColumn->category << endl;
+						}
+						currentBookColumn = currentBookColumn->nextBookInventory;
 					}
-					else {
-						cout << "CURRENTLY UNAVAILABLE BOOK(S)\n" << endl;
-						cout << availabilityView << endl;
-					}
-					while (currentBookTitlePointer != NULL) {	/*FIRST WHILE LOOP - LOOPS THROUGH THE LIST VERTICALLY*/
-						BookInformation* currentBookColumn = currentBookTitlePointer->bookInfo;
-						while (currentBookColumn != NULL) {		/*SECOND WHILE LOOP - LOOPS THROUGH THE LIST HORIZONTALLY*/
-							if (res == currentBookColumn->bookAvailability) {
-								cout << currentBookColumn->bookID << "\t" << currentBookColumn->bookTitle << "\t" << currentBookColumn->bookAuthor << "\t" << currentBookColumn->genre << "\t\t" << currentBookColumn->category << endl;
+					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+				}
+			}
+			break;
+			case 5:
+			{
+				string mainID = bookField.substr(0, 7);
+				cout << "SEARCH RESULT(S) BASED ON BOOK ID: " << bookField << endl
+					 << endl;
+				cout << expandedBookView << endl;
+				while (currentBookTitlePointer != NULL)
+				{
+					if (mainID == currentBookTitlePointer->bookInfo->bookID)
+					{
+						BookInformation *currentBookColumn = currentBookTitlePointer->bookInfo;
+						while (currentBookColumn != NULL)
+						{
+							if (bookField == currentBookColumn->bookID)
+							{
+								string res = currentBookColumn->bookAvailability == true ? "Available" : "Unavailable";
+								cout << currentBookColumn->bookID << "\t" << currentBookColumn->bookTitle << "\t" << currentBookColumn->bookAuthor << "\t" << currentBookColumn->genre << "\t\t" << currentBookColumn->category << "\t" << res << endl;
+								break;
 							}
 							currentBookColumn = currentBookColumn->nextBookInventory;
 						}
-						currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+						break;
 					}
+					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
-				break;
-				case 5: {
-					string mainID = bookField.substr(0, 7);
-					cout << "SEARCH RESULT(S) BASED ON BOOK ID: " << bookField << endl << endl;
-					cout << expandedBookView << endl;
-					while (currentBookTitlePointer != NULL) {
-						if (mainID == currentBookTitlePointer->bookInfo->bookID) {
-							BookInformation* currentBookColumn = currentBookTitlePointer->bookInfo;
-							while (currentBookColumn != NULL) {
-								if (bookField == currentBookColumn->bookID) {
-									string res = currentBookColumn->bookAvailability == true ? "Available" : "Unavailable";
-									cout << currentBookColumn->bookID << "\t" << currentBookColumn->bookTitle << "\t" << currentBookColumn->bookAuthor << "\t" << currentBookColumn->genre << "\t\t" << currentBookColumn->category << "\t" << res <<endl;
-									break;
-								}
-								currentBookColumn = currentBookColumn->nextBookInventory;
-							}
-							break;
-						}
-						currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
-					}
-				}
-					break;
+			}
+			break;
 			}
 		}
 	}
@@ -432,10 +505,12 @@ namespace book
 			getline(cin, newBookInformation->bookTitle); // ALLOWS THE INPUT OF STRING WITH SPACES || refer: https://stackoverflow.com/questions/30758245/how-to-store-a-complete-sentence-with-white-spaces-in-a-string-in-cpp
 			cout << "Book Author: ";
 			getline(cin, newBookInformation->bookAuthor);
-			if (checkDuplicateUniqueTitle(bookTitleHead, newBookInformation->bookTitle, newBookInformation->bookAuthor)) {
+			if (checkDuplicateUniqueTitle(bookTitleHead, newBookInformation->bookTitle, newBookInformation->bookAuthor))
+			{
 				cout << "A title exist with similar author, would you like to add duplicate instead? (Y/N)";
 				cin >> confirm;
-				switch (confirm) {
+				switch (confirm)
+				{
 				case 'y':
 				case 'Y':
 					addExistingBookTitle(bookTitleHead, newBookInformation->bookTitle, newBookInformation->bookAuthor);
@@ -446,10 +521,12 @@ namespace book
 					break;
 				}
 			}
-			else {
-				next:
+			else
+			{
+			next:
 				system("CLS");
-				cout << "Confirm Book Details\n" << endl;
+				cout << "Confirm Book Details\n"
+					 << endl;
 				cout << "Category: " << newBookInformation->category << endl;
 				cout << "Genre: " << newBookInformation->genre << endl;
 				cout << "Book Title: " << newBookInformation->bookTitle << endl;
@@ -464,16 +541,14 @@ namespace book
 					newBookInformation->bookID = generateBookID(bookTitleHead);
 					newBookInformation->bookAvailability = true;
 					newBookInformation->nextBookInventory = NULL;
-					newBookInformation->returnDate = NULL;
-					newBookInformation->borrowedDate = NULL;
 					/*CREATES A NEW UNIQUE BOOK TITLE COLUMN*/
-					BookTitle* newBookTitle = new BookTitle;
+					BookTitle *newBookTitle = new BookTitle;
 					newBookTitle->bookInfo = newBookInformation;
 					newBookTitle->nextBookTitle = NULL;
 					insertBookDetail(bookTitleHead, newBookTitle);
 				}
 			}
-			
+
 			break;
 		case 2:
 			string bookID;
@@ -490,39 +565,48 @@ namespace book
 		ADD EXISTING BOOK TITLE
 		- A function that insert to the inventory of the unique book title
 	*/
-	void addExistingBookTitle(BookTitle *& bookTitleHead, string bookID) {
-		BookTitle* currentColumn = bookTitleHead;
-		while (currentColumn != NULL) {
-			if (bookID == currentColumn->bookInfo->bookID) {
-				BookInformation* toAdd = new BookInformation(currentColumn->bookInfo->bookTitle, currentColumn->bookInfo->bookAuthor, currentColumn->bookInfo->genre, currentColumn->bookInfo->category, currentColumn->bookInfo->bookAvailability, currentColumn->bookInfo->bookID, NULL);
-				string bookid = toAdd->bookID;	//EX. BK10001, BK10002
-				if (currentColumn->bookInfo->nextBookInventory == NULL) {
+	void addExistingBookTitle(BookTitle *&bookTitleHead, string bookID)
+	{
+		BookTitle *currentUniqueTitlePointer = bookTitleHead;
+		while (currentUniqueTitlePointer != NULL)
+		{
+			if (bookID == currentUniqueTitlePointer->bookInfo->bookID)
+			{
+				BookInformation *toAdd = new BookInformation(currentUniqueTitlePointer->bookInfo->bookTitle, currentUniqueTitlePointer->bookInfo->bookAuthor, currentUniqueTitlePointer->bookInfo->genre, currentUniqueTitlePointer->bookInfo->category, currentUniqueTitlePointer->bookInfo->bookAvailability, currentUniqueTitlePointer->bookInfo->bookID, NULL);
+				string bookid = toAdd->bookID; //EX. BK10001, BK10002
+				if (currentUniqueTitlePointer->bookInfo->nextBookInventory == NULL)
+				{
 					toAdd->bookID = generateInventoryID(bookTitleHead, bookid);
 					toAdd->bookAvailability = true;
-					currentColumn->bookInfo->nextBookInventory = toAdd;
+					currentUniqueTitlePointer->bookInfo->nextBookInventory = toAdd;
 				}
-				else {
-					BookInformation* traverseRow = currentColumn->bookInfo;
-					while (traverseRow->nextBookInventory != NULL) {
-						traverseRow = traverseRow->nextBookInventory;
+				else
+				{
+					BookInformation *traverseColumnPointer = currentUniqueTitlePointer->bookInfo;
+					while (traverseColumnPointer->nextBookInventory != NULL)
+					{
+						traverseColumnPointer = traverseColumnPointer->nextBookInventory;
 					}
 					toAdd->bookID = generateInventoryID(bookTitleHead, bookid);
 					toAdd->bookAvailability = true;
-					traverseRow->nextBookInventory = toAdd;
+					traverseColumnPointer->nextBookInventory = toAdd;
 				}
 				cout << "Book Added successfully" << endl;
 				system("PAUSE");
 				break;
 			}
-			currentColumn = currentColumn->nextBookTitle;
+			currentUniqueTitlePointer = currentUniqueTitlePointer->nextBookTitle;
 		}
 	}
 
 	/* ADD EXISTING BOOK TITLE FUNCTION OVERLOAD */
-	void addExistingBookTitle(BookTitle*& bookTitleHead, string bookTitle, string bookAuthor) {
-		BookTitle* currentColumnPointer = bookTitleHead;
-		while (currentColumnPointer != NULL) {
-			if (bookTitle == currentColumnPointer->bookInfo->bookTitle && bookAuthor == currentColumnPointer->bookInfo->bookAuthor) {
+	void addExistingBookTitle(BookTitle *&bookTitleHead, string bookTitle, string bookAuthor)
+	{
+		BookTitle *currentColumnPointer = bookTitleHead;
+		while (currentColumnPointer != NULL)
+		{
+			if (bookTitle == currentColumnPointer->bookInfo->bookTitle && bookAuthor == currentColumnPointer->bookInfo->bookAuthor)
+			{
 				addExistingBookTitle(bookTitleHead, currentColumnPointer->bookInfo->bookID);
 				break;
 			}
@@ -534,15 +618,19 @@ namespace book
 		CHECK DUPLICATE UNIQUE TITLE
 		- This function is to check for duplicate unique titles and author
 	*/
-	bool checkDuplicateUniqueTitle(BookTitle *& bookTitleHead, string bookTitle, string bookAuthor) {
-		if (bookTitleHead != NULL) {
-			BookTitle* currentColumnPointer = bookTitleHead;
-			while (currentColumnPointer != NULL) {
-				if (bookTitle == currentColumnPointer->bookInfo->bookTitle && bookAuthor == currentColumnPointer->bookInfo->bookAuthor) {
+	bool checkDuplicateUniqueTitle(BookTitle *&bookTitleHead, string bookTitle, string bookAuthor)
+	{
+		if (bookTitleHead != NULL)
+		{
+			BookTitle *currentUniqueTitlePointer = bookTitleHead;
+			while (currentUniqueTitlePointer != NULL) /* TRAVERS THE LIST VERTICALLY */
+			{
+				if (bookTitle == currentUniqueTitlePointer->bookInfo->bookTitle && bookAuthor == currentUniqueTitlePointer->bookInfo->bookAuthor)
+				{
 					return true;
 					break;
 				}
-				currentColumnPointer = currentColumnPointer->nextBookTitle;
+				currentUniqueTitlePointer = currentUniqueTitlePointer->nextBookTitle;
 			}
 		}
 		return false;
@@ -580,56 +668,66 @@ namespace book
 	{
 		system("CLS");
 		int ch;
-		if (bookTitleHead == NULL) {
+		if (bookTitleHead == NULL)
+		{
 			cout << "Book List Empty!";
 		}
-		else {
-			BookTitle* currentBookColumn = bookTitleHead;
+		else
+		{
+			BookTitle *currentBookTitlePointer = bookTitleHead;
 			cout << "How would you like to view the Book List\n1. Expanded\n2. Simplified" << endl;
 			cout << "Menu: ";
 			cin >> ch;
 			system("CLS");
-			
-			switch (ch) {
+
+			switch (ch)
+			{
 			case 1:
 				cout << expandedBookView << endl;
-				while (currentBookColumn != NULL) {
-					if (currentBookColumn->bookInfo->nextBookInventory != NULL) {
-						BookInformation* currentRow = currentBookColumn->bookInfo;
-						while (currentRow != NULL) {
-							string res = currentRow->bookAvailability ? "Available" : "Unavailable";
-							cout << currentRow->bookID << "\t" << currentRow->bookTitle << "\t" << currentRow->bookAuthor << "\t" << currentRow->genre << "\t" << currentRow->category << "\t" << res << endl;
-							currentRow = currentRow->nextBookInventory;
+				while (currentBookTitlePointer != NULL)
+				{
+					if (currentBookTitlePointer->bookInfo->nextBookInventory != NULL)
+					{
+						BookInformation *currentColumnBook = currentBookTitlePointer->bookInfo;
+						while (currentColumnBook != NULL)
+						{
+							string res = currentColumnBook->bookAvailability ? "Available" : "Unavailable";
+							cout << currentColumnBook->bookID << "\t" << currentColumnBook->bookTitle << "\t" << currentColumnBook->bookAuthor << "\t" << currentColumnBook->genre << "\t" << currentColumnBook->category << "\t" << res << endl;
+							currentColumnBook = currentColumnBook->nextBookInventory;
 						}
 					}
-					else {
-						string res = currentBookColumn->bookInfo->bookAvailability ? "Available" : "Unavailable";
-						cout << currentBookColumn->bookInfo->bookID << "\t" << currentBookColumn->bookInfo->bookTitle << "\t" << currentBookColumn->bookInfo->bookAuthor << "\t" << currentBookColumn->bookInfo->genre << "\t" << currentBookColumn->bookInfo->category << "\t\t" << res << endl;
+					else
+					{
+						string res = currentBookTitlePointer->bookInfo->bookAvailability ? "Available" : "Unavailable";
+						cout << currentBookTitlePointer->bookInfo->bookID << "\t" << currentBookTitlePointer->bookInfo->bookTitle << "\t" << currentBookTitlePointer->bookInfo->bookAuthor << "\t" << currentBookTitlePointer->bookInfo->genre << "\t" << currentBookTitlePointer->bookInfo->category << "\t\t" << res << endl;
 					}
-					currentBookColumn = currentBookColumn->nextBookTitle;
+					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
 				break;
 			case 2:
 				int inventory;
 				cout << simplifiedBookView << endl;
-				while (currentBookColumn != NULL) {
+				while (currentBookTitlePointer != NULL)
+				{
 					inventory = 1;
-					if (currentBookColumn->bookInfo->nextBookInventory != NULL) {
-						BookInformation* currentRow = currentBookColumn->bookInfo;
-						while (currentRow->nextBookInventory != NULL) {
+					if (currentBookTitlePointer->bookInfo->nextBookInventory != NULL)
+					{
+						BookInformation *currentColumnBook = currentBookTitlePointer->bookInfo;
+						while (currentColumnBook->nextBookInventory != NULL)
+						{
 							inventory += 1;
-							currentRow = currentRow->nextBookInventory;
+							currentColumnBook = currentColumnBook->nextBookInventory;
 						}
-						cout << currentBookColumn->bookInfo->bookID << "\t" << currentRow->bookTitle << "\t" << currentRow->bookAuthor << "\t" << currentRow->genre << "\t" << currentRow->category << "\t" << inventory << endl;
+						cout << currentBookTitlePointer->bookInfo->bookID << "\t" << currentColumnBook->bookTitle << "\t" << currentColumnBook->bookAuthor << "\t" << currentColumnBook->genre << "\t" << currentColumnBook->category << "\t" << inventory << endl;
 					}
-					else {
-						cout << currentBookColumn->bookInfo->bookID << "\t" << currentBookColumn->bookInfo->bookTitle << "\t" << currentBookColumn->bookInfo->bookAuthor << "\t" << currentBookColumn->bookInfo->genre << "\t" << currentBookColumn->bookInfo->category << "\t\t" << inventory << endl;
+					else
+					{
+						cout << currentBookTitlePointer->bookInfo->bookID << "\t" << currentBookTitlePointer->bookInfo->bookTitle << "\t" << currentBookTitlePointer->bookInfo->bookAuthor << "\t" << currentBookTitlePointer->bookInfo->genre << "\t" << currentBookTitlePointer->bookInfo->category << "\t\t" << inventory << endl;
 					}
-					currentBookColumn = currentBookColumn->nextBookTitle;
+					currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 				}
 				break;
 			}
-			
 		}
 	}
 
@@ -645,9 +743,9 @@ namespace book
 		}
 		else
 		{
-			BookTitle* current = bookTitleHead;
+			BookTitle *current = bookTitleHead;
 			string tempID = current->bookInfo->bookID;
-			tempID = tempID.substr(2, 5);	//ONLY TAKES THE VALUE 5 CHARACTERS AFTER BK
+			tempID = tempID.substr(2, 5); //ONLY TAKES THE VALUE 5 CHARACTERS AFTER BK
 			string id = to_string(stoi(tempID) + 1);
 			return "BK" + id;
 		}
@@ -658,22 +756,28 @@ namespace book
 		- A function that generates unique inventory ID
 		- ex. BK10001-1
 	*/
-	string generateInventoryID(BookTitle*& bookTitleHead, string mainID) {
-		BookTitle* currentBookTitlePointer = bookTitleHead;
-		while (currentBookTitlePointer != NULL) {
-			if (mainID == currentBookTitlePointer->bookInfo->bookID) {
-				BookInformation* currentBookInformation = currentBookTitlePointer->bookInfo;
-				if (currentBookInformation->nextBookInventory == NULL) {
+	string generateInventoryID(BookTitle *&bookTitleHead, string mainID)
+	{
+		BookTitle *currentBookTitlePointer = bookTitleHead;
+		while (currentBookTitlePointer != NULL)
+		{
+			if (mainID == currentBookTitlePointer->bookInfo->bookID)
+			{
+				BookInformation *currentBookInformation = currentBookTitlePointer->bookInfo;
+				if (currentBookInformation->nextBookInventory == NULL)
+				{
 					return mainID + "-1";
 					break;
 				}
-				else {
+				else
+				{
 					string lastID;
-					while (currentBookInformation != NULL) {
+					while (currentBookInformation != NULL)
+					{
 						lastID = currentBookInformation->bookID;
 						currentBookInformation = currentBookInformation->nextBookInventory;
 					}
-					string inventoryNumber = lastID.substr(8, 5);		//get the value after "-"
+					string inventoryNumber = lastID.substr(8, 5); //get the value after "-"
 					string id = to_string(stoi(inventoryNumber) + 1);
 					return mainID + "-" + id;
 				}
@@ -681,6 +785,6 @@ namespace book
 			currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
 		}
 	}
-}
+} // namespace book
 
 #endif
