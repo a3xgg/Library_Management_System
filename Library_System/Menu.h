@@ -8,16 +8,25 @@
 using namespace std;
 using namespace patron;
 using namespace book;
-using namespace date;
 
 namespace menu {
+	/*INITIALIZE EMPTY HEADER / LIST*/
 	BookTitle* bookTitleHead = NULL;
 	Patron* patronHead = NULL;
+
+	/*SOME PREDEFINED BOOKS TO TEST OUT AS THIS PROGRAM IS NOT USING FILES OR DATABASE*/
+	BookTitle* bookTitle1 = new BookTitle(new BookInformation("Big Bang Theory", "John Wick", "Fantasy", "Fiction", true, "BK10001", NULL), NULL);
+	BookTitle* bookTitle2 = new BookTitle(new BookInformation("Bang Bang", "Door Door", "Science", "Fiction", true, "BK10002", NULL), bookTitle1);
+	BookTitle* bookTitle3 = new BookTitle(new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", false, "BK10003", new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", true, "BK10003-1000", NULL)), bookTitle2);
+	
+	/*LOGIN CREDENTIALS*/
 	const string username = "lmsadmin", password = "12345";
+	/*USER INPUT TO MATCH LOGIN CREDENTIALS*/
 	string* uname, * pass;
 	class Menu {
 		public:
 			Menu(int menuOption) {
+				bookTitleHead = bookTitle3;	/*REMOVE OR COMMENT THIS IF YOU WANT TO START WITH AN EMPTY HEADER OR LIST*/
 				/*
 					As switch statement in C++ does not support comparing strings, int value is used instead.
 					reference:
@@ -56,7 +65,7 @@ namespace menu {
 							cout << "Menu: ";
 							cin >> choice;
 							switch (choice) {
-								case 0: break;
+								case 0: system("CLS");  break;
 								case 1:
 									do {
 										system("CLS");
