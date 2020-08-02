@@ -85,7 +85,6 @@ namespace menu {
 											break;
 										case 3:
 											promptSearch(bookTitleHead);
-											system("PAUSE");
 											system("CLS");
 											break;
 										case 4:
