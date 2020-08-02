@@ -17,7 +17,7 @@ namespace menu {
 	/*SOME PREDEFINED BOOKS TO TEST OUT AS THIS PROGRAM IS NOT USING FILES OR DATABASE*/
 	BookTitle* bookTitle1 = new BookTitle(new BookInformation("Big Bang Theory", "John Wick", "Fantasy", "Fiction", true, "BK10001", NULL), NULL);
 	BookTitle* bookTitle2 = new BookTitle(new BookInformation("Bang Bang", "Door Door", "Science", "Fiction", true, "BK10002", NULL), bookTitle1);
-	BookTitle* bookTitle3 = new BookTitle(new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", false, "BK10003", new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", true, "BK10003-1000", NULL)), bookTitle2);
+	BookTitle* bookTitle3 = new BookTitle(new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", false, "BK10003", new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", true, "BK10003-1", NULL)), bookTitle2);
 	
 	/*LOGIN CREDENTIALS*/
 	const string username = "lmsadmin", password = "12345";
@@ -66,7 +66,7 @@ namespace menu {
 							cin >> choice;
 							switch (choice) {
 								case 0: system("CLS");  break;
-								case 1:
+								case 1:	/* BOOK FUNCTIONALITIES GOES HERE */
 									do {
 										system("CLS");
 										cout << "Book Functionalities" << endl;
@@ -89,6 +89,8 @@ namespace menu {
 											system("CLS");
 											break;
 										case 4:
+											promptUpdate(bookTitleHead);
+											system("CLS");
 											break;
 										case 0:
 											system("CLS");
