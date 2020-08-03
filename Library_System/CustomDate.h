@@ -8,6 +8,12 @@
 namespace date {
 	class Date {
 		public:
+			Date(){}
+			Date(int day, int month, int year) {
+				this->day = day;
+				this->month = month;
+				this->year = year;
+			}
 			int day, month, year;
 	};
 	bool checkDate(int day, int month, int year);
