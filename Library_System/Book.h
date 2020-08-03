@@ -37,7 +37,7 @@ namespace book
 	{
 	public:
 		BookInformation() {}
-		BookInformation(string bookTitle, string bookAuthor, string genre, string category, bool availability, string bookID, BookInformation *nextBookInvent)
+		/*BookInformation(string bookTitle, string bookAuthor, string genre, string category, bool availability, string bookID, BookInformation *nextBookInvent)
 		{
 			this->bookTitle = bookTitle;
 			this->bookAuthor = bookAuthor;
@@ -46,11 +46,23 @@ namespace book
 			this->bookAvailability = availability;
 			this->bookID = bookID;
 			this->nextBookInventory = nextBookInvent;
+		}*/
+		BookInformation(string bookTitle, string bookAuthor, string genre, string category, bool availability, string bookID, BookInformation* nextBookInvent, Date * returnDate, Date*borrowDate)
+		{
+			this->bookTitle = bookTitle;
+			this->bookAuthor = bookAuthor;
+			this->genre = genre;
+			this->category = category;
+			this->bookAvailability = availability;
+			this->bookID = bookID;
+			this->nextBookInventory = nextBookInvent;
+			this->returnDate = returnDate;
+			this->borrowedDate = borrowDate;
 		}
 		string category, genre, bookAuthor, bookTitle, bookID;
 		bool bookAvailability;
 		BookInformation *nextBookInventory;
-		Date returnDate, borrowedDate;
+		Date * returnDate, * borrowedDate;
 	};
 
 	/*FUNCTION PROTOTYPE*/
@@ -580,7 +592,7 @@ namespace book
 		{
 			if (bookID == currentUniqueTitlePointer->bookInfo->bookID)
 			{
-				BookInformation *toAdd = new BookInformation(currentUniqueTitlePointer->bookInfo->bookTitle, currentUniqueTitlePointer->bookInfo->bookAuthor, currentUniqueTitlePointer->bookInfo->genre, currentUniqueTitlePointer->bookInfo->category, currentUniqueTitlePointer->bookInfo->bookAvailability, currentUniqueTitlePointer->bookInfo->bookID, NULL);
+				BookInformation *toAdd = new BookInformation(currentUniqueTitlePointer->bookInfo->bookTitle, currentUniqueTitlePointer->bookInfo->bookAuthor, currentUniqueTitlePointer->bookInfo->genre, currentUniqueTitlePointer->bookInfo->category, currentUniqueTitlePointer->bookInfo->bookAvailability, currentUniqueTitlePointer->bookInfo->bookID, NULL, NULL, NULL);
 				string bookid = toAdd->bookID; //EX. BK10001, BK10002
 				if (currentUniqueTitlePointer->bookInfo->nextBookInventory == NULL)
 				{
