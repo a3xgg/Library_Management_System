@@ -49,6 +49,93 @@ namespace patron {
 	void viewPatron(Patron*& head);
 	void viewPatronBookList(Patron*&);
 	bool checkBookLimit(Patron*);
+	void borrowBook(Patron*&, BookTitle*&);
+
+	/*
+		BORROW BOOK FUNCTION
+		- This function allow the admin to borrow book for the patron.
+		- Once a book is borrowed, the bookAvailability field within the BookTitle of the borrowed book will be set to false.
+		- The borrowed book will then be copied over to the specified patron's book list, and the admin must specify the borrow date, the return will be appended by the function.
+	*/
+	void borrowBook(Patron*& patronHead, BookTitle *& libraryBooks) {
+		bool flag = false;
+		if (patronHead == NULL) {
+			cout << "Patron List is empty!" << endl;
+		}
+		else {
+			string patronInfo;
+			viewPatron(patronHead);
+			cout << "Enter Patron ID or Full Name to borrow book: ";
+			cin.ignore();
+			getline(cin, patronInfo);
+			Patron* current = patronHead;
+			while (current != NULL) {
+				string concat = current->firstName + " " + current->lastName;
+				if (patronInfo == current->patronID || patronInfo == concat) {
+					flag = true;
+					break;
+				}
+				current = current->linkToNextPatron;
+			}
+			if (flag) {
+				if (checkBookLimit(current)) {	/* CHECKS THE PATRON'S BOOK LIST TO CHECK WHETHER THE PATRON CAN BORROW ANOTHER BOOK OR NOT */
+					cout << "Patron " << current->firstName << " " << current->lastName << " is not allowed to borrow more books (active books = 3)" << endl;
+				}
+				else {
+					string bookID;
+					displayAllBooks(libraryBooks);
+					cout << "\nEnter a specific Book Information ID to borrow (ex. BK10001-1 or BK10001): ";
+					cin >> bookID;
+					BookTitle* currentBookTitlePointer = libraryBooks;
+					string mainID = bookID.substr(0, 7);		//GETS THE VALUE BK10001
+					while (currentBookTitlePointer != NULL)
+					{
+						if (mainID == currentBookTitlePointer->bookInfo->bookID)
+						{
+							BookInformation* currentBookColumn = currentBookTitlePointer->bookInfo;
+							while (currentBookColumn != NULL)
+							{
+								if ((bookID == currentBookColumn->bookID) && (currentBookColumn->bookAvailability != false))
+								{
+									/*Local PC Time variables*/
+									time_t currDateTime = time(0);
+									tm* currTime = localtime(&currDateTime); //REFER: https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm
+									currTime->tm_year = 1900 + currTime->tm_year;
+									currTime->tm_mon = 1 + currTime->tm_mon;
+									/*Set the book borrowed date (depend on pc time) and return date (add 15 days to borrowed date)*/
+									BookInformation* toBorrow = currentBookColumn;
+									Date* borrowDate = new Date(currTime->tm_mday, currTime->tm_mon, currTime->tm_year);
+									toBorrow->borrowedDate = borrowDate;
+
+									currDateTime = time(0) + (86400 * 15);	//1 day = 86400 seconds, 15 days = 15 * 86400
+									currTime = localtime(&currDateTime);
+									currTime->tm_year = 1900 + currTime->tm_year;
+									currTime->tm_mon = 1 + currTime->tm_mon;
+									Date* returnDate = new Date(currTime->tm_mday, currTime->tm_mon, currTime->tm_year);
+									toBorrow->returnDate = returnDate;
+
+									/*Sets the book availability in book section to false*/
+									currentBookColumn->bookAvailability = false;
+
+									/*Inserts the borrowed book to the patron list*/
+									/*NOT DONE - TO EDIT*/
+									current->patronBookList = toBorrow;
+
+									cout << "Patron " << current->firstName << " " << current->lastName << " has borrowed " << currentBookColumn->bookTitle << " with BookID: "<< currentBookColumn->bookID<< endl;
+									cout << "Date borrowed: " << toBorrow->borrowedDate->day << "/" << toBorrow->borrowedDate->month << "/" << toBorrow->borrowedDate->year<<endl;
+									cout << "Return date: " << toBorrow->returnDate->day << "/" << toBorrow->returnDate->month << "/" << toBorrow->returnDate->year << endl;
+									break;
+								}
+								currentBookColumn = currentBookColumn->nextBookInventory;
+							}
+							break;
+						}
+						currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+					}
+				}
+			}
+		}
+	}
 
 	/*
 		CHECK BOOK LIMIT FUNCTION
@@ -61,10 +148,9 @@ namespace patron {
 		}
 		else {
 			time_t currDateTime = time(0);
-			tm* currentDateTime = localtime(&currDateTime);		/*REFER: https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm*/
+			tm* currentDateTime = localtime(&currDateTime);		//REFER: https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm
 			
 			BookInformation* current = toCheckPatron->patronBookList;
-			cout << "built " << currentDateTime->tm_mday << "/" << 1 + currentDateTime->tm_mon << "/" << 1900 + currentDateTime->tm_year << endl;
 			while (current != NULL) {
 				if (counter > 3) {
 					break;
