@@ -14,48 +14,27 @@ using namespace std;
 using namespace date;
 
 namespace patron {
-	Date dob;
-	char ch;
-	string id, firstName, lastName;
-	char gender;
-	
 	class Patron {
 		public:
+			Date* dateOfBirth;
+			BookInformation* patronBookList;
 			Patron* linkToNextPatron;
 			char* registeredDate;
-			string patronID;
-			Date dateOfBirth;
-			string getID() {
-				return patronID;
-			}
-			char getGender() {
-				return this->gender;
-			}
-			string getFirstName() {
-				return this->firstName;
-			}
-			string getLastName() {
-				return this->lastName;
-			}
-			Date getDateOfBirth() {
-				return this->dateOfBirth;
-			}
-			void setFirstname(string fn) {
-				this->firstName = fn;
-			}
-			void setLastName(string ln) {
-				this->lastName = ln;
-			}
-			void setGender(char gender) {
-				this->gender = gender;
-			}
-			void setDob(Date dob) {
-				this->dateOfBirth = dob;
-			}
-
-		private:
-			string firstName, lastName;
+			string patronID, firstName, lastName;
 			char gender;
+			Patron(){}
+			Patron(string patronID, string firstName, string lastName, char gender,Date * dob, Patron*linkToNextPatron, BookInformation * patronBookList) {
+				this->patronID = patronID;
+				this->firstName = firstName;
+				this->lastName = lastName;
+				this->gender = gender;
+				this->dateOfBirth = dob;
+				this->linkToNextPatron = linkToNextPatron;
+				this->patronBookList = patronBookList;
+				time_t currentDateTime = time(0);
+				this->registeredDate = (ctime(&currentDateTime));
+			}
+			
 	};
 
 	//FUNCTION PROTOTYPES
@@ -83,17 +62,18 @@ namespace patron {
 			string patronInfo;
 			bool flag = false;
 			int ch;
-			cout << "Search Patron\n1. ID\n2. Full Name\n" << endl;
+			cout << "Search Patron\n1. ID\n2. Full Name\n\n0. Back\n" << endl;
 			cout << "Menu: ";
 			cin >> ch;
 			switch (ch) {
+			case 0: break;
 			case 1:
 				system("CLS");
-				cout << "Enter ID to search" << endl;
+				cout << "Enter Patron ID to search" << endl;
 				cout << "ID: ";
 				cin >> patronInfo;
 				while (current != NULL) {
-					bool res = patronInfo == current->getID() ? printPatronDetails(current) : false;
+					bool res = patronInfo == current->patronID ? printPatronDetails(current) : false;
 					if (res) { flag = true; break; }
 					else current = current->linkToNextPatron;
 				}
@@ -105,7 +85,7 @@ namespace patron {
 				cin.ignore();
 				getline(cin, patronInfo);
 				while (current != NULL) {
-					string concatenate = current->getFirstName() + " " + current->getLastName();
+					string concatenate = current->firstName + " " + current->lastName;
 					bool res = patronInfo == concatenate ? printPatronDetails(current) : false;
 					if (res) { flag = true; break; }
 					else current = current->linkToNextPatron;
@@ -127,7 +107,7 @@ namespace patron {
 		system("CLS");
 		cout << "Patron Details" << endl;
 		cout << "Patron ID\tName\t\tGender\tDate of Birth\tRegistered Date" << endl;
-		cout << patron->getID() << "\t\t" << patron->getFirstName() << " " << patron->getLastName() << "\t" << patron->getGender() << "\t" << patron->getDateOfBirth().day << "/" << patron->getDateOfBirth().month << "/" << patron->getDateOfBirth().year << "\t" << patron->registeredDate << endl;
+		cout << patron->patronID << "\t\t" << patron->firstName << " " << patron->lastName << "\t" << patron->gender << "\t" << patron->dateOfBirth->day << "/" << patron->dateOfBirth->month << "/" << patron->dateOfBirth->year << "\t" << patron->registeredDate << endl;
 		system("PAUSE");
 		return true;
 	}
@@ -139,46 +119,47 @@ namespace patron {
 		- refer: https://stackoverflow.com/questions/22000190/when-passing-head-of-linked-list-to-function-why-do-we-need-to-pass-it-by-refere%5C%5C
 	*/
 	void promptNewPatron(Patron *& head) {
+		char ch;
 		system("CLS");
 		time_t currentDateTime = time(0);
-		Patron* p = new Patron;
+		Patron* newPatron = new Patron;
+		Date* dateOfBirth = new Date;
 		cout << "Enter Patron details" << endl;
 		cout << "First name: ";
-		cin >> firstName;
+		cin >> newPatron->firstName;
 		cout << "Last name: ";
-		cin >> lastName;
+		cin >> newPatron->lastName;
 		cout << "Gender (M/F): ";
-		cin >> gender;
+		cin >> newPatron->gender;
 		do {
 			cout << "Date of Birth (dd/mm/yyyy): ";
-			cin >> dob.day >> dob.month >> dob.year;
-		} while (!checkDate(dob.day, dob.month, dob.year));
+			cin >> dateOfBirth->day >> dateOfBirth->month >> dateOfBirth->year;
+		} while (!checkDate(dateOfBirth->day, dateOfBirth->month, dateOfBirth->year));
 
 		system("CLS");
 
 		cout << "Confirm Patron Details" << endl << endl;
-		cout << "Name: " << firstName << " " << lastName << endl;
-		cout << "Gender: " << gender << endl;
-		cout << "Date of Birth: " << dob.day << "/" << dob.month << "/" << dob.year << endl;
+		cout << "Name: " << newPatron->firstName << " " << newPatron->lastName << endl;
+		cout << "Gender: " << newPatron->gender << endl;
+		cout << "Date of Birth: " << dateOfBirth->day << "/" << dateOfBirth->month << "/" << dateOfBirth->year << endl;
 		cout << endl;
 		cout << "Confirm? (Y/N): ";
 		cin >> ch;
 		switch (ch) {
 		case 'Y':
 		case 'y':
-			p->patronID = generateID(head);
-			p->setFirstname(firstName);
-			p->setLastName(lastName);
-			p->setGender(toupper(gender));
-			p->setDob(dob);
-			p->registeredDate = ctime(&currentDateTime);
-			p->linkToNextPatron = NULL;
-			insertPatron(head, p);
+			newPatron->gender = toupper(newPatron->gender);
+			newPatron->dateOfBirth = dateOfBirth;
+			newPatron->patronID = generateID(head);
+			newPatron->registeredDate = ctime(&currentDateTime);
+			newPatron->linkToNextPatron = NULL;
+			newPatron->patronBookList = NULL;
+			insertPatron(head, newPatron);
 			break;
 		case 'N':
 		case'n':
 			system("CLS");
-			//promptNewPatron(head);
+			promptNewPatron(head);
 			break;
 		}
 	}
@@ -220,7 +201,9 @@ namespace patron {
 			Patron * current = head;
 			cout << "Patron ID\tName\t\tGender\tDate of Birth\tRegistered Date" << endl;
 			while (current != NULL) {
-				cout << current->getID() << "\t\t" << current->getFirstName() << " " << current->getLastName() << "\t" << current->getGender() << "\t" << current->getDateOfBirth().day << "/" << current->getDateOfBirth().month << "/" << current->getDateOfBirth().year << "\t" << current->registeredDate << endl;
+				bool res = current->registeredDate == NULL ? true : false;
+				string emptyDate = res == true ? "Empty Date" : current->registeredDate;
+				cout << current->patronID << "\t\t" << current->firstName << " " << current->lastName << "\t" << current->gender << "\t" << current->dateOfBirth->day << "/" << current->dateOfBirth->month << "/" << current->dateOfBirth->year << "\t" << emptyDate << endl;
 				current = current->linkToNextPatron;
 			}
 			cout << "\nTotal Patron(s): " << getSize(head) << " Patron(s)." << endl;
@@ -256,11 +239,11 @@ namespace patron {
 	*/
 	string generateID(Patron * & patronHead) {
 		if (patronHead == NULL) {
-			return "PT1";
+			return "PT10001";
 		}
 		else {
 			Patron* current = patronHead;
-			string tempID = current->getID();
+			string tempID = current->patronID;
 			tempID = tempID.substr(2, 5);
 			string id = to_string(stoi(tempID) + 1);
 			return "PT" + id;
