@@ -48,6 +48,37 @@ namespace patron {
 	bool printPatronDetails(Patron* patron);
 	void viewPatron(Patron*& head);
 	void viewPatronBookList(Patron*&);
+	bool checkBookLimit(Patron*);
+
+	/*
+		CHECK BOOK LIMIT FUNCTION
+		- A function to check the Top 3 Book List of a Patron, if it has 3 active books (comparing current PC time with book return date field), returns true;
+	*/
+	bool checkBookLimit(Patron * toCheckPatron) {
+		int counter = 0;
+		if (toCheckPatron->patronBookList == NULL) {
+			return false;
+		}
+		else {
+			time_t currDateTime = time(0);
+			tm* currentDateTime = localtime(&currDateTime);		/*REFER: https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm*/
+			
+			BookInformation* current = toCheckPatron->patronBookList;
+			cout << "built " << currentDateTime->tm_mday << "/" << 1 + currentDateTime->tm_mon << "/" << 1900 + currentDateTime->tm_year << endl;
+			while (current != NULL) {
+				if (counter > 3) {
+					break;
+				}
+				else {
+					if (((current->returnDate->day == currentDateTime->tm_mday) && (current->returnDate->month == (1 + currentDateTime->tm_mon)) && (current->returnDate->year == (1900 + currentDateTime->tm_year)))) {
+						counter += 1;
+					}
+				}
+				current = current->nextBookInventory;
+			}
+		}
+		return counter >= 3 ? true : false;
+	}
 
 	/*
 		VIEW PATRON BOOK LIST FUNCTION
@@ -76,13 +107,13 @@ namespace patron {
 					else {
 						int counter = 1;
 						cout << toViewBookList->firstName << " " << toViewBookList->lastName << " latest book(s) borrowed" << endl;
-						cout << "Book Number\tBook ID\tBook Title" << endl;
+						cout << "Book Number\tBook ID\tBook Title\tReturn Date" << endl;
 						BookInformation* currentBookList = toViewBookList->patronBookList;
 						while (currentBookList != NULL) {
 							if (counter > 10) {
 								break;
 							}
-							cout << counter << "\t" << currentBookList->bookID << "\t" << currentBookList->bookTitle << endl;
+							cout << counter << "\t" << currentBookList->bookID << "\t" << currentBookList->bookTitle << "\t" << currentBookList->returnDate->day << "/" << currentBookList->returnDate->month << "/" << currentBookList->returnDate->year << endl;
 							counter += 1;
 							currentBookList = currentBookList->nextBookInventory;
 						}
