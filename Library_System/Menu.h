@@ -19,6 +19,10 @@ namespace menu {
 	BookTitle* bookTitle2 = new BookTitle(new BookInformation("Bang Bang", "Door Door", "Science", "Fiction", true, "BK10002", NULL), bookTitle1);
 	BookTitle* bookTitle3 = new BookTitle(new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", false, "BK10003", new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", true, "BK10003-1", NULL)), bookTitle2);
 	
+	/*PREDEFINED PATRON DATA*/
+	Patron* patron1 = new Patron("PT10001","John","Smith",'M', new Date(10,02,2000), NULL, NULL);
+	Patron* patron2 = new Patron("PT10002", "Mary", "Jane", 'F', new Date(15, 12, 1993), patron1, NULL);
+	Patron* patron3 = new Patron("PT10003", "Allan", "May", 'M', new Date(01, 01, 2010), patron2, NULL);
 	/*LOGIN CREDENTIALS*/
 	const string username = "lmsadmin", password = "12345";
 	/*USER INPUT TO MATCH LOGIN CREDENTIALS*/
@@ -26,7 +30,8 @@ namespace menu {
 	class Menu {
 		public:
 			Menu(int menuOption) {
-				bookTitleHead = bookTitle3;	/*REMOVE OR COMMENT THIS IF YOU WANT TO START WITH AN EMPTY HEADER OR LIST*/
+				bookTitleHead = bookTitle3;	/*REMOVE OR COMMENT TO START WIT EMPTY HEADER OR LIST*/
+				patronHead = patron3;		/*REMOVE OR COMMENT TO START WITH EMPTY HEADER OR LIST*/
 				/*
 					As switch statement in C++ does not support comparing strings, int value is used instead.
 					reference:
