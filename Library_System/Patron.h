@@ -40,11 +40,110 @@ namespace patron {
 	//FUNCTION PROTOTYPES
 	int getSize(Patron*& head);
 	void promptNewPatron(Patron*&);
+	void promptUpdate(Patron*&);
 	void insertPatron(Patron*& head, Patron* newPatron);
 	void searchPatron(Patron*& head);
+	void updatePatron(Patron*&, string, int);
 	string generateID(Patron*& patronHead);
 	bool printPatronDetails(Patron* patron);
 	void viewPatron(Patron*& head);
+
+	/*
+		PROMPT UPDATE FUNCTION
+		- A function that prompts the admin on which patron to update based on ID or Name
+	*/
+	void promptUpdate(Patron*& patronHead) {
+		if (patronHead == NULL) {
+			cout << "Patron List is empty!" << endl;
+		}
+		else {
+			system("CLS");
+			int ch;
+			string patronInfo;
+			viewPatron(patronHead);
+			cout << "Enter Patron's Full Name or ID to update: ";
+			cin.ignore();
+			getline(cin, patronInfo);
+			cout << "\nWhat information do you want to update\n1. All\n2. First Name\n3. Last Name\n4. Gender\n5. Date of Birth\nMenu: ";
+			cin >> ch;
+			updatePatron(patronHead, patronInfo, ch);	
+		}
+	}
+
+	/*
+		UPDATE PATRON FUNCTION
+		- This function updates the patron information by getting the patron to update from the promptUpdate() function
+	*/
+	void updatePatron(Patron*& patronHead, string patronInfo, int choice) {
+		system("CLS");
+		if (patronHead == NULL) {
+			cout << "Patron List is empty!" << endl;
+		}
+		else {
+			Patron* current = patronHead;
+			Patron* found = NULL;
+			while (current != NULL) {
+				string concat = current->firstName + " " + current->lastName;
+				if (patronInfo == concat || patronInfo == current->patronID) {
+					found = current;
+					cout << "UPDATING PATRON " << patronInfo << endl;
+					switch (choice) {
+					case 1:
+						cout << "First Name: ";
+						cin >> found->firstName;
+						cout << "Last Name: ";
+						cin >> found->lastName; 
+						cout << "Gender (M/F): ";
+						cin >> found->gender;
+						found->gender = toupper(found->gender);
+						cout << "Date of Birth (dd/mm/yyyy): ";
+						cin >> found->dateOfBirth->day >> found->dateOfBirth->month >> found->dateOfBirth->year;
+
+						cout << "\nPatron " << patronInfo << " has been updated with the following details: "<< endl;
+						cout << "First name: " << found->firstName << endl;
+						cout << "Last name: " << found->lastName << endl;
+						cout << "Gender: " << found->gender << endl;
+						cout << "Date of Birth: " << found->dateOfBirth->day << "/" << found->dateOfBirth->month << "/" << found->dateOfBirth->year << endl;
+						break;
+					case 2:
+						cout << "First Name: ";
+						cin >> found->firstName;
+
+						cout << "\nPatron " << patronInfo << " has been updated with following details: " << endl;
+						cout << "First Name: " << found->firstName << endl;
+						break;
+					case 3:
+						cout << "Last Name: ";
+						cin >> found->lastName;
+
+						cout << "\nPatron " << patronInfo << " has been updated with following details: " << endl;
+						cout << "Last Name: " << found->lastName << endl;
+						break;
+					case 4:
+						cout << "Gender (M/F): ";
+						cin >> found->gender;
+						found->gender = toupper(found->gender);
+						cout << "\nPatron " << patronInfo << " has been updated with following details: " << endl;
+						cout << "Gender: " << found->gender << endl;
+						break;
+					case 5:
+						cout << "Date of Birth (dd/mm/yyyy): ";
+						cin >> found->dateOfBirth->day >> found->dateOfBirth->month >> found->dateOfBirth->year;
+
+						cout << "\nPatron " << patronInfo << " has been updated with following details: " << endl;
+						cout << "Date of Birth: " << found->dateOfBirth->day << "/" << found->dateOfBirth->month << "/" << found->dateOfBirth->year << endl;
+						break;
+					}
+					system("PAUSE");
+					break;
+					
+				}
+				current = current->linkToNextPatron;
+			}
+			
+		}
+		
+	}
 
 	/*
 		SEARCH PATRON FUNCTION
@@ -207,8 +306,6 @@ namespace patron {
 				current = current->linkToNextPatron;
 			}
 			cout << "\nTotal Patron(s): " << getSize(head) << " Patron(s)." << endl;
-			system("PAUSE");
-			system("CLS");
 		}
 	}
 
