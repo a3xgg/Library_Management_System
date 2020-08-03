@@ -47,6 +47,52 @@ namespace patron {
 	string generateID(Patron*& patronHead);
 	bool printPatronDetails(Patron* patron);
 	void viewPatron(Patron*& head);
+	void viewPatronBookList(Patron*&);
+
+	/*
+		VIEW PATRON BOOK LIST FUNCTION
+		- This function allows the admin to view a patron's book history/list.
+		- The function prompts the admin to enter Patron's ID or Full Name to view its book list.
+	*/
+	void viewPatronBookList(Patron*& patronHead) {
+		if (patronHead == NULL) {
+			cout << "Patron List is empty";
+		}
+		else {
+			string patronInfo;
+			system("CLS");
+			viewPatron(patronHead);
+			cout << "\nEnter Patron ID or Full Name to check book history: ";
+			cin.ignore();
+			getline(cin, patronInfo);
+			Patron* current = patronHead;
+			while (current != NULL) {
+				string concat = current->firstName + " " + current->lastName;
+				if (patronInfo == current->patronID || patronInfo == concat) {
+					Patron* toViewBookList = current;
+					if (toViewBookList->patronBookList == NULL) {
+						cout << toViewBookList->firstName << " " << toViewBookList->lastName << " have yet to borrow a book!" << endl;
+					}
+					else {
+						int counter = 1;
+						cout << toViewBookList->firstName << " " << toViewBookList->lastName << " latest book(s) borrowed" << endl;
+						cout << "Book Number\tBook ID\tBook Title" << endl;
+						BookInformation* currentBookList = toViewBookList->patronBookList;
+						while (currentBookList != NULL) {
+							if (counter > 10) {
+								break;
+							}
+							cout << counter << "\t" << currentBookList->bookID << "\t" << currentBookList->bookTitle << endl;
+							counter += 1;
+							currentBookList = currentBookList->nextBookInventory;
+						}
+					}
+					break;
+				}
+				current = current->linkToNextPatron;
+			}
+		}
+	}
 
 	/*
 		PROMPT UPDATE FUNCTION
