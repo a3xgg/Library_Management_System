@@ -172,7 +172,7 @@ namespace patron
 						else
 						{
 							/*change this statement - illogical - bug*/
-							if (!(patronBookList->returnDate->day == currentDateTime->tm_mday) && (patronBookList->returnDate->month == currentDateTime->tm_mon) && (patronBookList->returnDate->year == currentDateTime->tm_year))
+							if (currentDateTime->tm_mday <= patronBookList->returnDate->day && currentDateTime->tm_mon <= patronBookList->returnDate->month && currentDateTime->tm_year <= patronBookList->returnDate->year)
 							{
 								cout << currentPatron->patronID << "\t\t" << currentPatron->firstName << " " << currentPatron->lastName << "\t" << patronBookList->bookTitle << "\t\t" << patronBookList->bookID << "\t" << patronBookList->returnDate->day << "/" << patronBookList->returnDate->month << "/" << patronBookList->returnDate->year << endl;
 								break;
