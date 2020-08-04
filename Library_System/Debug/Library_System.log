@@ -1,0 +1,3 @@
+﻿  Library_System.cpp
+C:\Users\ander\source\repos\Library_System\Library_System\Book.h(808): warning C4715: 'book::generateInventoryID': not all control paths return a value
+  Library_System.vcxproj -> C:\Users\ander\source\repos\Library_System\Debug\Library_System.exe

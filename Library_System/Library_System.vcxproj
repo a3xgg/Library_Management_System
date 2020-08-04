@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <CompileAsManaged>false</CompileAsManaged>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +143,8 @@
     <ClCompile Include="Library_System.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Book.h" />
+    <ClInclude Include="CustomDate.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Patron.h" />
   </ItemGroup>

@@ -26,5 +26,11 @@
     <ClInclude Include="Patron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Book.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomDate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
