@@ -94,10 +94,7 @@ namespace patron
 					{
 						system("CLS");
 						/* Get Local PC Date and Time*/
-						time_t dateInSeconds = time(0);
-						tm *currentDateTime = localtime(&dateInSeconds);
-						currentDateTime->tm_year = 1900 + currentDateTime->tm_year;
-						currentDateTime->tm_mon = 1 + currentDateTime->tm_mon;
+						time_t localComputerTimeInSeconds = time(0);
 
 						int counter = 0;
 						BookInformation *foundPatronBookList = foundPatron->patronBookList;
@@ -110,12 +107,15 @@ namespace patron
 							{
 								break;
 							}
-							/* 
-								The following IF statement checks the current PC time alongside the return date of the book
-								IF the current date is less than or equal to the return date, it will print the book details, increases counter
-								ELSE the book will not be printed, but counter still increases;
-							*/
-							if ((currentDateTime->tm_mday <= foundPatronBookList->returnDate->day) || currentDateTime->tm_mon <= foundPatronBookList->returnDate->month && currentDateTime->tm_year <= foundPatronBookList->returnDate->year)
+							/* Set book returnDate into timestamp - https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm*/
+							tm *bookReturnDateToTimestamp = localtime(&localComputerTimeInSeconds);
+							bookReturnDateToTimestamp->tm_year = foundPatronBookList->returnDate->year - 1900;
+							bookReturnDateToTimestamp->tm_mon = foundPatronBookList->returnDate->month - 1;
+							bookReturnDateToTimestamp->tm_mday = foundPatronBookList->returnDate->day;
+							/* Convert into timestamp */
+							time_t convertedReturnDate = mktime(bookReturnDateToTimestamp);
+							/* Compares the current PC time with converted returnDate*/
+							if (localComputerTimeInSeconds <= convertedReturnDate)
 							{
 								cout << foundPatronBookList->bookID << "\t\t" << foundPatronBookList->bookTitle << "\t\t" << foundPatronBookList->borrowedDate->day << "/" << foundPatronBookList->borrowedDate->month << "/" << foundPatronBookList->borrowedDate->year << "\t\t" << foundPatronBookList->returnDate->day << "/" << foundPatronBookList->returnDate->month << "/" << foundPatronBookList->returnDate->year << endl;
 								counter += 1;
@@ -129,37 +129,36 @@ namespace patron
 						cout << "\nWhich book does " << foundPatron->firstName << " " << foundPatron->lastName << " want to return?: " << endl;
 						cout << "\nBook ID: ";
 						cin >> bookID;
-						while (foundPatronBookList != NULL)
+						BookInformation *bookList = foundPatron->patronBookList; /* Another Pointer was declared as previous one has already been used and value has changed */
+						while (bookList != NULL)
 						{
-							cout << "Found in library";
-							system("PAUSE");
-							if (bookID == foundPatronBookList->bookID)
+							if (bookID == bookList->bookID)
 							{
-								BookInformation *toReturn = foundPatronBookList;
-								/* In Patron Book List */
-								/* Sets when the book was returned */
-								toReturn->returnDate->day = currentDateTime->tm_mday;
-								toReturn->returnDate->month = currentDateTime->tm_mon;
-								toReturn->returnDate->year = currentDateTime->tm_year;
-								/* No longer available to the user */
-								toReturn->bookAvailability = false;
-								/*move to first history node*/
-								/* In Books Library */
+								BookInformation *toReturn = bookList;
+								tm* ltime = localtime(&localComputerTimeInSeconds);
+								Date* returnedDate = new Date(ltime->tm_mday, ltime->tm_mon + 1, ltime->tm_year + 1900);
+								/* Changes made to Patron Book List */
+									/* Set the returnDate field to when the Patron returned the book */
+									toReturn->returnDate = returnedDate;
+									/* No longer available to the user */
+									toReturn->bookAvailability = false;
+
+									/*move to first history node*/
+								/* Changes made to Books Library */
 								BookTitle *currentRowPointer = libraryBooks;
 								string mainID = bookID.substr(0, 7); //GETS THE VALUE BK10001
-								while (currentRowPointer != NULL)
+								while (currentRowPointer != NULL)	/* First While Loop - traverse the Vertical Book List*/
 								{
-									if (mainID == currentRowPointer->bookInfo->bookID)
+									if (mainID == currentRowPointer->bookInfo->bookID)	/* Checks whether the main id (BK1000X) is equal to the current row pointer ID */
 									{
-										cout << "Main id found";
-										system("PAUSE");
 										BookInformation *currentBookColumn = currentRowPointer->bookInfo;
-										while (currentBookColumn != NULL)
+										while (currentBookColumn != NULL)	/* Second While Loop - traverse the Horizontal Book List */
 										{
-											if ((bookID == currentBookColumn->bookID))
+											if ((bookID == currentBookColumn->bookID))	/* This compares the USER INPUT to the current column book ID */
 											{
-												cout << "Book Found" << endl;
-												system("PAUSE");
+												BookInformation* toEdit = currentBookColumn;
+												toEdit->bookAvailability = true;
+												cout << "returned" << endl;
 												break;
 											}
 											currentBookColumn = currentBookColumn->nextBookInventory;
@@ -170,7 +169,7 @@ namespace patron
 								}
 								break;
 							}
-							foundPatronBookList = foundPatronBookList->nextBookInventory;
+							bookList = bookList->nextBookInventory;
 						}
 					}
 					break;
@@ -223,7 +222,7 @@ namespace patron
 							/* changes the date stored in bookReturnDateTime to seconds */
 							time_t bookReturnDateTimeToSeconds = mktime(bookReturnDateTime);
 							/* Comparing date in seconds is much more convenient */
-							if (localTimeInSeconds <= bookReturnDateTimeToSeconds)	
+							if (localTimeInSeconds <= bookReturnDateTimeToSeconds)
 							{
 								cout << currentPatron->patronID << "\t\t" << currentPatron->firstName << " " << currentPatron->lastName << "\t" << patronBookList->bookTitle << "\t\t" << patronBookList->bookID << "\t" << patronBookList->returnDate->day << "/" << patronBookList->returnDate->month << "/" << patronBookList->returnDate->year << endl;
 								break;
