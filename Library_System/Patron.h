@@ -107,7 +107,6 @@ namespace patron {
 		- The borrowed book will then be copied over to the specified patron's book list, and the admin must specify the borrow date, the return will be appended by the function.
 	*/
 	void borrowBook(Patron*& patronHead, BookTitle *& libraryBooks) {
-		bool flag = false;
 		if (patronHead == NULL) {
 			cout << "Patron List is empty!" << endl;
 		}
@@ -121,76 +120,74 @@ namespace patron {
 			while (current != NULL) {
 				string concat = current->firstName + " " + current->lastName;
 				if (patronInfo == current->patronID || patronInfo == concat) {
-					flag = true;
+					if (checkBookLimit(current)) {	/* CHECKS THE PATRON'S BOOK LIST TO CHECK WHETHER THE PATRON CAN BORROW ANOTHER BOOK OR NOT */
+						cout << "Patron " << current->firstName << " " << current->lastName << " is not allowed to borrow more books (active books = 3)" << endl;
+						system("PAUSE");
+					}
+					else {
+						bool flag = false;
+						string bookID;
+						displayAllBooks(libraryBooks);
+						cout << "\nEnter a specific Book Information ID to borrow (ex. BK10001-1 or BK10001): ";
+						cin >> bookID;
+						BookTitle* currentBookTitlePointer = libraryBooks;
+						string mainID = bookID.substr(0, 7);		//GETS THE VALUE BK10001
+						while (currentBookTitlePointer != NULL)
+						{
+							if (mainID == currentBookTitlePointer->bookInfo->bookID)
+							{
+								BookInformation* currentBookColumn = currentBookTitlePointer->bookInfo;
+								while (currentBookColumn != NULL)
+								{
+									if ((bookID == currentBookColumn->bookID) && currentBookColumn->bookAvailability == true)
+									{
+										BookInformation* found = currentBookColumn;
+										/*Local PC Time variables*/
+										time_t currDateTime = time(0);
+										tm* currTime = localtime(&currDateTime); //REFER: https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm
+										currTime->tm_year = 1900 + currTime->tm_year;
+										currTime->tm_mon = 1 + currTime->tm_mon;
+										/*Set the book borrowed date (depend on pc time) and return date (add 15 days to borrowed date)*/
+										Date* borrowDate = new Date(currTime->tm_mday, currTime->tm_mon, currTime->tm_year);
+
+										currDateTime = time(0) + (86400 * 15);	//1 day = 86400 seconds, 15 days = 15 * 86400
+										currTime = localtime(&currDateTime);
+										currTime->tm_year = 1900 + currTime->tm_year;
+										currTime->tm_mon = 1 + currTime->tm_mon;
+										Date* returnDate = new Date(currTime->tm_mday, currTime->tm_mon, currTime->tm_year);
+
+										/*Here I created a new book information so that it does not override the current books and inventory*/
+										BookInformation* toBorrow = new BookInformation(found->bookTitle, found->bookAuthor, found->genre, found->category, found->bookAvailability, found->bookID, NULL, returnDate, borrowDate);
+
+										/*Sets the book availability in book library to false or unavailable*/
+										currentBookColumn->bookAvailability = false;
+
+										/*Inserts the borrowed book to the FIRST NODE of the patron book list*/
+										if (current->patronBookList == NULL) {
+											current->patronBookList = toBorrow;
+										}
+										else {
+											BookInformation* previousBookInList = current->patronBookList;
+											toBorrow->nextBookInventory = previousBookInList;
+											current->patronBookList = toBorrow;
+										}
+										/* Prints out borrowed details and dates*/
+										cout << endl;
+										cout << "Patron " << current->firstName << " " << current->lastName << " has borrowed " << currentBookColumn->bookTitle << " with BookID: " << currentBookColumn->bookID << endl;
+										cout << "Date borrowed: " << toBorrow->borrowedDate->day << "/" << toBorrow->borrowedDate->month << "/" << toBorrow->borrowedDate->year << endl;
+										cout << "Return date: " << toBorrow->returnDate->day << "/" << toBorrow->returnDate->month << "/" << toBorrow->returnDate->year << endl;
+										break;
+									}
+									currentBookColumn = currentBookColumn->nextBookInventory;
+								}
+								break;
+							}
+							currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
+						}
+					}
 					break;
 				}
 				current = current->linkToNextPatron;
-			}
-			if (flag) {
-				if (checkBookLimit(current)) {	/* CHECKS THE PATRON'S BOOK LIST TO CHECK WHETHER THE PATRON CAN BORROW ANOTHER BOOK OR NOT */
-					cout << "Patron " << current->firstName << " " << current->lastName << " is not allowed to borrow more books (active books = 3)" << endl;
-				}
-				else {
-					bool flag = false;
-					string bookID;
-					displayAllBooks(libraryBooks);
-					cout << "\nEnter a specific Book Information ID to borrow (ex. BK10001-1 or BK10001): ";
-					cin >> bookID;
-					BookTitle* currentBookTitlePointer = libraryBooks;
-					string mainID = bookID.substr(0, 7);		//GETS THE VALUE BK10001
-					while (currentBookTitlePointer != NULL)
-					{
-						if (mainID == currentBookTitlePointer->bookInfo->bookID)
-						{
-							BookInformation* currentBookColumn = currentBookTitlePointer->bookInfo;
-							while (currentBookColumn != NULL)
-							{
-								if ((bookID == currentBookColumn->bookID) && currentBookColumn->bookAvailability == true)
-								{
-									BookInformation* found = currentBookColumn;
-									/*Local PC Time variables*/
-									time_t currDateTime = time(0);
-									tm* currTime = localtime(&currDateTime); //REFER: https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm
-									currTime->tm_year = 1900 + currTime->tm_year;
-									currTime->tm_mon = 1 + currTime->tm_mon;
-									/*Set the book borrowed date (depend on pc time) and return date (add 15 days to borrowed date)*/
-									Date* borrowDate = new Date(currTime->tm_mday, currTime->tm_mon, currTime->tm_year);
-
-									currDateTime = time(0) + (86400 * 15);	//1 day = 86400 seconds, 15 days = 15 * 86400
-									currTime = localtime(&currDateTime);
-									currTime->tm_year = 1900 + currTime->tm_year;
-									currTime->tm_mon = 1 + currTime->tm_mon;
-									Date* returnDate = new Date(currTime->tm_mday, currTime->tm_mon, currTime->tm_year);
-
-									/*Here I created a new book information so that it does not override the current books and inventory*/
-									BookInformation* toBorrow = new BookInformation(found->bookTitle, found->bookAuthor, found->genre, found->category, found->bookAvailability, found->bookID, NULL, returnDate, borrowDate); 
-
-									/*Sets the book availability in book library to false or unavailable*/
-									currentBookColumn->bookAvailability = false;
-
-									/*Inserts the borrowed book to the FIRST NODE of the patron book list*/
-									if (current->patronBookList == NULL) {
-										current->patronBookList = toBorrow;
-									}
-									else {
-										BookInformation* previousBookInList = current->patronBookList;
-										toBorrow->nextBookInventory = previousBookInList;
-										current->patronBookList = toBorrow;
-									}
-									/* Prints out borrowed details and dates*/
-									cout << endl;
-									cout << "Patron " << current->firstName << " " << current->lastName << " has borrowed " << currentBookColumn->bookTitle << " with BookID: "<< currentBookColumn->bookID<< endl;
-									cout << "Date borrowed: " << toBorrow->borrowedDate->day << "/" << toBorrow->borrowedDate->month << "/" << toBorrow->borrowedDate->year<<endl;
-									cout << "Return date: " << toBorrow->returnDate->day << "/" << toBorrow->returnDate->month << "/" << toBorrow->returnDate->year << endl;
-									break;
-								}
-								currentBookColumn = currentBookColumn->nextBookInventory;
-							}
-							break;
-						}
-						currentBookTitlePointer = currentBookTitlePointer->nextBookTitle;
-					}
-				}
 			}
 		}
 	}
@@ -214,7 +211,7 @@ namespace patron {
 					break;
 				}
 				else {
-					if (((current->returnDate->day == currentDateTime->tm_mday) && (current->returnDate->month == (1 + currentDateTime->tm_mon)) && (current->returnDate->year == (1900 + currentDateTime->tm_year)))) {
+					if (!((current->returnDate->day == currentDateTime->tm_mday) && (current->returnDate->month == (1 + currentDateTime->tm_mon)) && (current->returnDate->year == (1900 + currentDateTime->tm_year)))) {
 						counter += 1;
 					}
 				}
