@@ -71,12 +71,12 @@ namespace patron
 		}
 		else
 		{
-			string patronInfo;
-			string bookID;
+			string patronInfo, bookID;
 			viewPatron(patronHead);
 			cout << "Enter Patron ID or Full Name to return book: ";
 			cin.ignore();
 			getline(cin, patronInfo);
+
 			Patron *pointerToPatronHead = patronHead;
 			while (pointerToPatronHead != NULL)
 			{ /* Loops through the Patron Linked List to find the specified Patron*/
@@ -101,13 +101,14 @@ namespace patron
 						cout << foundPatron->firstName << " " << foundPatron->lastName << " borrowed book(s)\n"
 							 << endl;
 						cout << "Book ID\t\tBook Title\t\tBorrowed Date\t\tReturn Date" << endl;
-						while (foundPatronBookList != NULL) /* Checks the top 3 Nodes of the patron book list to check for active books */
+						/* Checks the top 3 Nodes of the patron book list to check for active books */
+						while (foundPatronBookList != NULL)
 						{
 							if (counter > 3)
 							{
 								break;
 							}
-							/* Set book returnDate into timestamp - https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm*/
+							/* Set book returnDate into timestamp - https://www.tutorialspoint.com/cplusplus/cpp_date_time.htm */
 							tm *bookReturnDateToTimestamp = localtime(&localComputerTimeInSeconds);
 							bookReturnDateToTimestamp->tm_year = foundPatronBookList->returnDate->year - 1900;
 							bookReturnDateToTimestamp->tm_mon = foundPatronBookList->returnDate->month - 1;
@@ -115,7 +116,7 @@ namespace patron
 							/* Convert into timestamp */
 							time_t convertedReturnDate = mktime(bookReturnDateToTimestamp);
 							/* Compares the current PC time with converted returnDate*/
-							if (localComputerTimeInSeconds <= convertedReturnDate)
+							if (localComputerTimeInSeconds < convertedReturnDate)
 							{
 								cout << foundPatronBookList->bookID << "\t\t" << foundPatronBookList->bookTitle << "\t\t" << foundPatronBookList->borrowedDate->day << "/" << foundPatronBookList->borrowedDate->month << "/" << foundPatronBookList->borrowedDate->year << "\t\t" << foundPatronBookList->returnDate->day << "/" << foundPatronBookList->returnDate->month << "/" << foundPatronBookList->returnDate->year << endl;
 								counter += 1;
@@ -126,37 +127,104 @@ namespace patron
 							}
 							foundPatronBookList = foundPatronBookList->nextBookInventory;
 						}
+
+						/* Prompt book to return */
 						cout << "\nWhich book does " << foundPatron->firstName << " " << foundPatron->lastName << " want to return?: " << endl;
 						cout << "\nBook ID: ";
 						cin >> bookID;
-						BookInformation *bookList = foundPatron->patronBookList; /* Another Pointer was declared as previous one has already been used and value has changed */
+
+						/* Loop through the Patron's book list to find specified book id*/
+						BookInformation *bookList = foundPatron->patronBookList;
 						while (bookList != NULL)
 						{
 							if (bookID == bookList->bookID)
 							{
 								BookInformation *toReturn = bookList;
-								tm* ltime = localtime(&localComputerTimeInSeconds);
-								Date* returnedDate = new Date(ltime->tm_mday, ltime->tm_mon + 1, ltime->tm_year + 1900);
+								/* Get current local PC time*/
+								tm *ltime = localtime(&localComputerTimeInSeconds);
+								/* new Date class created - to be inserted into toReturn */
+								Date *returnedDate = new Date(ltime->tm_mday, ltime->tm_mon + 1, ltime->tm_year + 1900);
 								/* Changes made to Patron Book List */
-									/* Set the returnDate field to when the Patron returned the book */
-									toReturn->returnDate = returnedDate;
-									/* No longer available to the user */
-									toReturn->bookAvailability = false;
+								/* Set the returnDate field to when the Patron returned the book */
+								toReturn->returnDate = returnedDate;
+								/* No longer available to the user */
+								toReturn->bookAvailability = false;
+								/*move to last node - depending on the position*/
+								if (foundPatron->patronBookList->nextBookInventory != NULL)
+								{
 
-									/*move to first history node*/
+									int position = 0; /* Get the position of the toReturn Node to be used to move the node to the last position of the book list */
+									BookInformation *bookPointer = foundPatron->patronBookList;
+									while (bookPointer != NULL)
+									{
+										if (position > 3)
+										{
+											break;
+										}
+										if (bookPointer->bookID == toReturn->bookID)
+										{
+											position += 1;
+											break;
+										}
+										position += 1;
+										bookPointer = bookPointer->nextBookInventory;
+									}
+
+									/* Switch case - to move the return book node to last node position depending on the position */
+									switch (position)
+									{
+									case 1:
+									{
+										foundPatron->patronBookList = toReturn->nextBookInventory; /* Pointing to the next book of the first node */
+										toReturn->nextBookInventory = NULL;
+										BookInformation *traverse = foundPatron->patronBookList;
+										while (traverse->nextBookInventory != NULL)
+										{
+											traverse = traverse->nextBookInventory;
+										}
+										traverse->nextBookInventory = toReturn;
+									}
+									break;
+									case 2:
+									{
+										foundPatron->patronBookList->nextBookInventory = toReturn->nextBookInventory;
+										toReturn->nextBookInventory = NULL;
+										BookInformation *traverse = foundPatron->patronBookList;
+										while (traverse->nextBookInventory != NULL)
+										{
+											traverse = traverse->nextBookInventory;
+										}
+										traverse->nextBookInventory = toReturn;
+									}
+									break;
+									case 3:
+									{
+										foundPatron->patronBookList->nextBookInventory->nextBookInventory = toReturn->nextBookInventory;
+										toReturn->nextBookInventory = NULL;
+										BookInformation *traverse = foundPatron->patronBookList;
+										while (traverse->nextBookInventory != NULL)
+										{
+											traverse = traverse->nextBookInventory;
+										}
+										traverse->nextBookInventory = toReturn;
+									}
+									break;
+									}
+								}
+
 								/* Changes made to Books Library */
 								BookTitle *currentRowPointer = libraryBooks;
 								string mainID = bookID.substr(0, 7); //GETS THE VALUE BK10001
-								while (currentRowPointer != NULL)	/* First While Loop - traverse the Vertical Book List*/
+								while (currentRowPointer != NULL)	 /* First While Loop - traverse the Vertical Book List*/
 								{
-									if (mainID == currentRowPointer->bookInfo->bookID)	/* Checks whether the main id (BK1000X) is equal to the current row pointer ID */
+									if (mainID == currentRowPointer->bookInfo->bookID) /* Checks whether the main id (BK1000X) is equal to the current row pointer ID */
 									{
 										BookInformation *currentBookColumn = currentRowPointer->bookInfo;
-										while (currentBookColumn != NULL)	/* Second While Loop - traverse the Horizontal Book List */
+										while (currentBookColumn != NULL) /* Second While Loop - traverse the Horizontal Book List */
 										{
-											if ((bookID == currentBookColumn->bookID))	/* This compares the USER INPUT to the current column book ID */
+											if ((bookID == currentBookColumn->bookID)) /* This compares the USER INPUT to the current column book ID */
 											{
-												BookInformation* toEdit = currentBookColumn;
+												BookInformation *toEdit = currentBookColumn;
 												toEdit->bookAvailability = true;
 												cout << "returned" << endl;
 												break;
