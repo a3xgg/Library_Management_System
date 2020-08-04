@@ -14,15 +14,19 @@ namespace menu {
 	BookTitle* bookTitleHead = NULL;
 	Patron* patronHead = NULL;
 
-	/*SOME PREDEFINED BOOKS TO TEST OUT AS THIS PROGRAM IS NOT USING FILES OR DATABASE*/
-	BookTitle* bookTitle1 = new BookTitle(new BookInformation("Big Bang Theory", "John Wick", "Fantasy", "Fiction", true, "BK10001", NULL), NULL);
-	BookTitle* bookTitle2 = new BookTitle(new BookInformation("Bang Bang", "Door Door", "Science", "Fiction", true, "BK10002", NULL), bookTitle1);
-	BookTitle* bookTitle3 = new BookTitle(new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", false, "BK10003", new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", true, "BK10003-1", NULL)), bookTitle2);
+	/*HARDCODED BOOK DATA*/
+	BookTitle* bookTitle1 = new BookTitle(new BookInformation("Big Bang Theory", "John Wick", "Fantasy", "Fiction", true, "BK10001", NULL, NULL, NULL), NULL);
+	BookTitle* bookTitle2 = new BookTitle(new BookInformation("Bang Bang", "Door Door", "Science", "Fiction", true, "BK10002", NULL, NULL, NULL), bookTitle1);
+	BookTitle* bookTitle3 = new BookTitle(new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", true, "BK10003", new BookInformation("Harry Potter", "JK Rowling", "Fantasy", "Fiction", true, "BK10003-1", NULL, NULL, NULL), NULL, NULL), bookTitle2);
+	BookTitle* bookTitle4 = new BookTitle(new BookInformation("Life of Pi", "The Pi Guys", "Biography", "Non-Fiction", true, "BK10004", NULL, NULL, NULL), bookTitle3);
+	BookTitle* bookTitle5 = new BookTitle(new BookInformation("Story of Microsoft", "Good Boys", "Narrative", "Non-Fiction", true, "BK10005", NULL, NULL, NULL), bookTitle4);
 	
-	/*PREDEFINED PATRON DATA*/
+	/*HARDCODED PATRON DATA*/
 	Patron* patron1 = new Patron("PT10001","John","Smith",'M', new Date(10,02,2000), NULL, NULL);
 	Patron* patron2 = new Patron("PT10002", "Mary", "Jane", 'F', new Date(15, 12, 1993), patron1, NULL);
 	Patron* patron3 = new Patron("PT10003", "Allan", "May", 'M', new Date(01, 01, 2010), patron2, NULL);
+	Patron* patron4 = new Patron("PT10004", "Jim", "Fallon", 'M', new Date(10, 02, 1992), patron3, NULL);
+	Patron* patron5 = new Patron("PT10005", "Victoria", "Maor", 'F', new Date(10, 02, 1997), patron4, NULL);
 	/*LOGIN CREDENTIALS*/
 	const string username = "lmsadmin", password = "12345";
 	/*USER INPUT TO MATCH LOGIN CREDENTIALS*/
@@ -30,8 +34,8 @@ namespace menu {
 	class Menu {
 		public:
 			Menu(int menuOption) {
-				bookTitleHead = bookTitle3;	/*REMOVE OR COMMENT TO START WIT EMPTY HEADER OR LIST*/
-				patronHead = patron3;		/*REMOVE OR COMMENT TO START WITH EMPTY HEADER OR LIST*/
+				bookTitleHead = bookTitle5;	/*REMOVE OR COMMENT TO START WITH EMPTY HEADER OR LIST*/
+				patronHead = patron5;		/*REMOVE OR COMMENT TO START WITH EMPTY HEADER OR LIST*/
 				/*
 					As switch statement in C++ does not support comparing strings, int value is used instead.
 					reference:
@@ -114,6 +118,7 @@ namespace menu {
 										switch (choice) {
 										case 1:
 											viewPatron(patronHead);
+											system("PAUSE");
 											system("CLS");
 											break;
 										case 2:
@@ -124,6 +129,29 @@ namespace menu {
 											promptNewPatron(patronHead);
 											system("CLS");
 											break;
+										case 4:
+											promptUpdate(patronHead);
+											system("CLS");
+											break;
+										case 6:
+											borrowBook(patronHead, bookTitleHead);
+											system("PAUSE");
+											system("CLS");
+											break;
+										case 7:
+											returnBook(patronHead, bookTitleHead);
+											system("PAUSE");
+											system("CLS");
+											break;
+										case 8:
+											viewPatronBookList(patronHead);
+											system("PAUSE");
+											system("CLS");
+											break;
+										case 9:
+											viewPatronWithActiveBook(patronHead);
+											system("PAUSE");
+											system("CLS");
 										case 0:
 											system("CLS");
 											Menu(2);
