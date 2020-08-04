@@ -50,6 +50,55 @@ namespace patron {
 	void viewPatronBookList(Patron*&);
 	bool checkBookLimit(Patron*);
 	void borrowBook(Patron*&, BookTitle*&);
+	void viewPatronWithActiveBook(Patron*&);
+
+	/*
+		VIEW PATRON WITH ACTIVE BOOK
+		- This function check the top 3 node of a patron's book list
+		- If any of this books are active, it will print the patron details and latest borrowed book (top node)
+	*/
+
+	void viewPatronWithActiveBook(Patron*& patronHead) {
+		system("CLS");
+		/* GET CURRENT LOCAL PC DATE AND TIME - USE TO COMPARE THE RETURN DATE OF A BOOK */
+		time_t inSeconds = time(0);
+		tm* currentDateTime = localtime(&inSeconds);
+		currentDateTime->tm_year = 1900 + currentDateTime->tm_year;
+		currentDateTime->tm_mon = 1 + currentDateTime->tm_mon;
+		int counter = 0;
+		bool hasActiveBook = false;
+		if (patronHead == NULL) {
+			cout << "Patron list is empty!";
+		}
+		else {
+			Patron* currentPatron = patronHead; //Points to the First Node of the Patron's list
+			cout << "PATRON WITH ACTIVE BOOKS" << endl;
+			cout << "\nPatron ID\tFull Name\tLatest Book Borrowed\tBook ID\tReturn Date" << endl;
+			while (currentPatron != NULL) {
+				if (currentPatron->patronBookList != NULL) {
+					BookInformation* patronBookList = currentPatron->patronBookList;
+					while (patronBookList != NULL) {
+						if (counter > 3) {
+							break;
+						}
+						else {
+							if (!(patronBookList->returnDate->day == currentDateTime->tm_mday) && (patronBookList->returnDate->month == currentDateTime->tm_mon) && (patronBookList->returnDate->year == currentDateTime->tm_year)) {
+								cout << currentPatron->patronID << "\t\t" << currentPatron->firstName << " " << currentPatron->lastName << "\t" << patronBookList->bookTitle << "\t\t" << patronBookList->bookID << "\t" << patronBookList->returnDate->day << "/" << patronBookList->returnDate->month << "/" << patronBookList->returnDate->year << endl;
+								break;
+							}
+							else {
+								counter += 1;
+							}
+						}
+						patronBookList = patronBookList->nextBookInventory;
+					}
+					if (hasActiveBook) {
+					}
+				}
+				currentPatron = currentPatron->linkToNextPatron;
+			}
+		}
+	}
 
 	/*
 		BORROW BOOK FUNCTION
