@@ -101,7 +101,7 @@ namespace patron
 
 						int counter = 0;
 						BookInformation *foundPatronBookList = foundPatron->patronBookList;
-						cout << foundPatron->firstName << " " << foundPatron->lastName << " book(s) borrowed\n"
+						cout << foundPatron->firstName << " " << foundPatron->lastName << " borrowed book(s)\n"
 							 << endl;
 						cout << "Book ID\t\tBook Title\t\tBorrowed Date\t\tReturn Date" << endl;
 						while (foundPatronBookList != NULL)	/* Checks the top 3 Nodes of the patron book list to check for active books */
@@ -171,8 +171,7 @@ namespace patron
 						}
 						else
 						{
-							/*change this statement - illogical - bug*/
-							if (currentDateTime->tm_mday <= patronBookList->returnDate->day && currentDateTime->tm_mon <= patronBookList->returnDate->month && currentDateTime->tm_year <= patronBookList->returnDate->year)
+							if ((currentDateTime->tm_mday <= patronBookList->returnDate->day) || currentDateTime->tm_mon <= patronBookList->returnDate->month && currentDateTime->tm_year <= patronBookList->returnDate->year)
 							{
 								cout << currentPatron->patronID << "\t\t" << currentPatron->firstName << " " << currentPatron->lastName << "\t" << patronBookList->bookTitle << "\t\t" << patronBookList->bookID << "\t" << patronBookList->returnDate->day << "/" << patronBookList->returnDate->month << "/" << patronBookList->returnDate->year << endl;
 								break;
