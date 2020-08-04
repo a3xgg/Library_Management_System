@@ -104,7 +104,7 @@ namespace patron
 						cout << foundPatron->firstName << " " << foundPatron->lastName << " borrowed book(s)\n"
 							 << endl;
 						cout << "Book ID\t\tBook Title\t\tBorrowed Date\t\tReturn Date" << endl;
-						while (foundPatronBookList != NULL)	/* Checks the top 3 Nodes of the patron book list to check for active books */
+						while (foundPatronBookList != NULL) /* Checks the top 3 Nodes of the patron book list to check for active books */
 						{
 							if (counter > 3)
 							{
@@ -115,10 +115,13 @@ namespace patron
 								IF the current date is less than or equal to the return date, it will print the book details, increases counter
 								ELSE the book will not be printed, but counter still increases;
 							*/
-							if (currentDateTime->tm_mday <= foundPatronBookList->returnDate->day && currentDateTime->tm_mon <= foundPatronBookList->returnDate->month && currentDateTime->tm_year <= foundPatronBookList->returnDate->year) {
+							if ((currentDateTime->tm_mday <= foundPatronBookList->returnDate->day) || currentDateTime->tm_mon <= foundPatronBookList->returnDate->month && currentDateTime->tm_year <= foundPatronBookList->returnDate->year)
+							{
 								cout << foundPatronBookList->bookID << "\t\t" << foundPatronBookList->bookTitle << "\t\t" << foundPatronBookList->borrowedDate->day << "/" << foundPatronBookList->borrowedDate->month << "/" << foundPatronBookList->borrowedDate->year << "\t\t" << foundPatronBookList->returnDate->day << "/" << foundPatronBookList->returnDate->month << "/" << foundPatronBookList->returnDate->year << endl;
 								counter += 1;
-							} else{
+							}
+							else
+							{
 								counter += 1;
 							}
 							foundPatronBookList = foundPatronBookList->nextBookInventory;
@@ -126,6 +129,49 @@ namespace patron
 						cout << "\nWhich book does " << foundPatron->firstName << " " << foundPatron->lastName << " want to return?: " << endl;
 						cout << "\nBook ID: ";
 						cin >> bookID;
+						while (foundPatronBookList != NULL)
+						{
+							cout << "Found in library";
+							system("PAUSE");
+							if (bookID == foundPatronBookList->bookID)
+							{
+								BookInformation *toReturn = foundPatronBookList;
+								/* In Patron Book List */
+								/* Sets when the book was returned */
+								toReturn->returnDate->day = currentDateTime->tm_mday;
+								toReturn->returnDate->month = currentDateTime->tm_mon;
+								toReturn->returnDate->year = currentDateTime->tm_year;
+								/* No longer available to the user */
+								toReturn->bookAvailability = false;
+								/*move to first history node*/
+								/* In Books Library */
+								BookTitle *currentRowPointer = libraryBooks;
+								string mainID = bookID.substr(0, 7); //GETS THE VALUE BK10001
+								while (currentRowPointer != NULL)
+								{
+									if (mainID == currentRowPointer->bookInfo->bookID)
+									{
+										cout << "Main id found";
+										system("PAUSE");
+										BookInformation *currentBookColumn = currentRowPointer->bookInfo;
+										while (currentBookColumn != NULL)
+										{
+											if ((bookID == currentBookColumn->bookID))
+											{
+												cout << "Book Found" << endl;
+												system("PAUSE");
+												break;
+											}
+											currentBookColumn = currentBookColumn->nextBookInventory;
+										}
+										break;
+									}
+									currentRowPointer = currentRowPointer->nextBookTitle;
+								}
+								break;
+							}
+							foundPatronBookList = foundPatronBookList->nextBookInventory;
+						}
 					}
 					break;
 				}
@@ -143,10 +189,8 @@ namespace patron
 	{
 		system("CLS");
 		/* GET CURRENT LOCAL PC DATE AND TIME - USE TO COMPARE THE RETURN DATE OF A BOOK */
-		time_t inSeconds = time(0);
-		tm *currentDateTime = localtime(&inSeconds);
-		currentDateTime->tm_year = 1900 + currentDateTime->tm_year;
-		currentDateTime->tm_mon = 1 + currentDateTime->tm_mon;
+		time_t localTimeInSeconds = time(0);
+
 		int counter = 0;
 		bool hasActiveBook = false;
 		if (patronHead == NULL)
@@ -158,20 +202,28 @@ namespace patron
 			Patron *currentPatron = patronHead; //Points to the First Node of the Patron's list
 			cout << "PATRON WITH ACTIVE BOOKS" << endl;
 			cout << "\nPatron ID\tFull Name\tLatest Book Borrowed\tBook ID\tReturn Date" << endl;
-			while (currentPatron != NULL)
+			while (currentPatron != NULL) /* First While Loop - traverse throught the patron linked list */
 			{
-				if (currentPatron->patronBookList != NULL)
+				if (currentPatron->patronBookList != NULL) /* If a patron's book list is not empty, it will proceed to printing, else it will continue the while loop*/
 				{
 					BookInformation *patronBookList = currentPatron->patronBookList;
-					while (patronBookList != NULL)
+					while (patronBookList != NULL) /* Second While Loop - traverse throught the Patron's book list */
 					{
-						if (counter > 3)
+						if (counter > 3) /* A counter is used as only the top 3 Node is considered to be the active books */
 						{
 							break;
 						}
 						else
 						{
-							if ((currentDateTime->tm_mday <= patronBookList->returnDate->day) || currentDateTime->tm_mon <= patronBookList->returnDate->month && currentDateTime->tm_year <= patronBookList->returnDate->year)
+							tm *bookReturnDateTime = localtime(&localTimeInSeconds);
+							/* Sets bookReturnDateTime to returnDate values */
+							bookReturnDateTime->tm_year = patronBookList->returnDate->year - 1900;
+							bookReturnDateTime->tm_mon = patronBookList->returnDate->month - 1;
+							bookReturnDateTime->tm_mday = patronBookList->returnDate->day;
+							/* changes the date stored in bookReturnDateTime to seconds */
+							time_t bookReturnDateTimeToSeconds = mktime(bookReturnDateTime);
+							/* Comparing date in seconds is much more convenient */
+							if (localTimeInSeconds <= bookReturnDateTimeToSeconds)	
 							{
 								cout << currentPatron->patronID << "\t\t" << currentPatron->firstName << " " << currentPatron->lastName << "\t" << patronBookList->bookTitle << "\t\t" << patronBookList->bookID << "\t" << patronBookList->returnDate->day << "/" << patronBookList->returnDate->month << "/" << patronBookList->returnDate->year << endl;
 								break;
