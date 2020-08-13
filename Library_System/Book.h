@@ -37,16 +37,6 @@ namespace book
 	{
 	public:
 		BookInformation() {}
-		/*BookInformation(string bookTitle, string bookAuthor, string genre, string category, bool availability, string bookID, BookInformation *nextBookInvent)
-		{
-			this->bookTitle = bookTitle;
-			this->bookAuthor = bookAuthor;
-			this->genre = genre;
-			this->category = category;
-			this->bookAvailability = availability;
-			this->bookID = bookID;
-			this->nextBookInventory = nextBookInvent;
-		}*/
 		BookInformation(string bookTitle, string bookAuthor, string genre, string category, bool availability, string bookID, BookInformation* nextBookInvent, Date * returnDate, Date*borrowDate)
 		{
 			this->bookTitle = bookTitle;
