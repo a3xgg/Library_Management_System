@@ -226,7 +226,7 @@ namespace patron
 											{
 												BookInformation *toEdit = currentBookColumn;
 												toEdit->bookAvailability = true;
-												cout << "returned" << endl;
+												cout << "Book " << toEdit->bookTitle << " with Book ID " << toEdit->bookID << " has been returned!" << endl;
 												break;
 											}
 											currentBookColumn = currentBookColumn->nextBookInventory;
@@ -259,7 +259,6 @@ namespace patron
 		time_t localTimeInSeconds = time(0);
 
 		int counter = 0;
-		bool hasActiveBook = false;
 		if (patronHead == NULL)
 		{
 			cout << "Patron list is empty!";
@@ -301,9 +300,6 @@ namespace patron
 							}
 						}
 						patronBookList = patronBookList->nextBookInventory;
-					}
-					if (hasActiveBook)
-					{
 					}
 				}
 				currentPatron = currentPatron->linkToNextPatron;
