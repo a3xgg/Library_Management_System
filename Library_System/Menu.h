@@ -112,7 +112,7 @@ namespace menu {
 									do {
 										system("CLS");
 										cout << "Patron Functionalities" << endl;
-										cout << "\n1. View Patron\n2. Search Patron\n3. Insert Patron\n4. Update Patron\n5. Delete Patron\n\n6. Borrow Book\n7. Return Book\n8. Patron Book History\n9. View All Patron with Active Books\n\n0. Back" << endl;
+										cout << "\n1. View Patron\n2. Search Patron\n3. Insert Patron\n4. Update Patron\n\n6. Borrow Book\n7. Return Book\n8. Patron Book History\n9. View All Patron with Active Books\n\n0. Back" << endl;
 										cout << "Menu: ";
 										cin >> choice;
 										switch (choice) {
